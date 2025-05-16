@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { fallbackTestimonials } from "@/lib/fallback-data"
 
-export function TestimonialsSection() {
+export default function TestimonialsSection() {
   const [mounted, setMounted] = useState(false)
   const [testimonials, setTestimonials] = useState(fallbackTestimonials)
 

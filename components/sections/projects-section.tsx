@@ -10,7 +10,7 @@ import { CardIllumination } from "@/components/card-illumination"
 import { fallbackProjects } from "@/lib/fallback-data"
 import Link from "next/link"
 
-export function ProjectsSection() {
+export default function ProjectsSection() {
   const [mounted, setMounted] = useState(false)
   const [projects, setProjects] = useState(fallbackProjects)
 

@@ -19,7 +19,8 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null }
 }
 
-async function dbConnect() {
+// Named export for connectToDatabase
+export const connectToDatabase = async () => {
   // If we're in static generation (build time) and don't have a MongoDB URI,
   // return null to allow fallback data to be used
   if (isStaticGeneration && !MONGODB_URI) {
@@ -71,8 +72,9 @@ async function dbConnect() {
   return cached.conn
 }
 
-// Add the named export for connectToDatabase
-export const connectToDatabase = dbConnect
+// Default export for backward compatibility
+async function dbConnect() {
+  return await connectToDatabase()
+}
 
-// Keep the default export for backward compatibility
 export default dbConnect

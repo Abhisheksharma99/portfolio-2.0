@@ -5,7 +5,7 @@ interface SectionDividerProps {
   className?: string
 }
 
-export function SectionDivider({ variant = "wave", className }: SectionDividerProps) {
+export default function SectionDivider({ variant = "wave", className }: SectionDividerProps) {
   return (
     <div className={cn("section-divider", className)}>
       {variant === "wave" && (

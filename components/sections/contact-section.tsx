@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Mail, Phone, MapPin, Send, Linkedin, Github } from "lucide-react"
 import { CardIllumination } from "@/components/card-illumination"
 
-export function ContactSection() {
+export default function ContactSection() {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",

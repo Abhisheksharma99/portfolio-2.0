@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/db/connect"
 import { fallbackBlogs } from "@/lib/fallback-data"
 import { revalidatePath } from "next/cache"
 
+// Get published blogs for public display
 export async function getBlogs() {
   try {
     // Try to import the Blog model dynamically
@@ -26,7 +27,7 @@ export async function getBlogs() {
   }
 }
 
-// Add the getAllBlogs function
+// Get all blogs for admin panel
 export async function getAllBlogs() {
   try {
     // Try to import the Blog model dynamically
@@ -49,6 +50,7 @@ export async function getAllBlogs() {
   }
 }
 
+// Get a single blog by slug
 export async function getBlogBySlug(slug: string) {
   try {
     // Find the blog in fallback data first
@@ -74,6 +76,7 @@ export async function getBlogBySlug(slug: string) {
   }
 }
 
+// Get blog slugs for public pages
 export async function getBlogSlugs() {
   try {
     // Try to import the Blog model dynamically
@@ -96,7 +99,7 @@ export async function getBlogSlugs() {
   }
 }
 
-// Add the getAllBlogSlugs function
+// Get all blog slugs for static generation
 export async function getAllBlogSlugs() {
   try {
     // Try to import the Blog model dynamically
@@ -119,6 +122,7 @@ export async function getAllBlogSlugs() {
   }
 }
 
+// Get related blogs
 export async function getRelatedBlogs(currentSlug: string, limit = 3) {
   try {
     // Filter out the current blog from fallback data
@@ -156,7 +160,7 @@ export async function getRelatedBlogs(currentSlug: string, limit = 3) {
   }
 }
 
-// Add the createBlog function
+// Create a new blog
 export async function createBlog(blogData: any) {
   try {
     // Try to import the Blog model dynamically
@@ -182,7 +186,7 @@ export async function createBlog(blogData: any) {
   }
 }
 
-// Add the updateBlog function
+// Update an existing blog
 export async function updateBlog(id: string, blogData: any) {
   try {
     // Try to import the Blog model dynamically
@@ -209,7 +213,7 @@ export async function updateBlog(id: string, blogData: any) {
   }
 }
 
-// Add the deleteBlog function
+// Delete a blog
 export async function deleteBlog(id: string) {
   try {
     // Try to import the Blog model dynamically

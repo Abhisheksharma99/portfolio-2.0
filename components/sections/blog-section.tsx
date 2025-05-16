@@ -9,7 +9,7 @@ import { CardIllumination } from "@/components/card-illumination"
 import { fallbackBlogs } from "@/lib/fallback-data"
 import Link from "next/link"
 
-export function BlogSection() {
+export default function BlogSection() {
   const [mounted, setMounted] = useState(false)
   const [blogs, setBlogs] = useState(fallbackBlogs)
 

@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { fallbackWorkExperience, fallbackEducation } from "@/lib/fallback-data"
 
-export function AboutSection() {
+export default function AboutSection() {
   const [mounted, setMounted] = useState(false)
   const [workExperience, setWorkExperience] = useState(fallbackWorkExperience)
   const [education, setEducation] = useState(fallbackEducation)

@@ -6,7 +6,7 @@ import { ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export function HeroSection() {
+export default function HeroSection() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
