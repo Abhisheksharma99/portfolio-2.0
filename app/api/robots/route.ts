@@ -1,7 +1,8 @@
-export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://abhishek-sharma-portfolio.com"
+export function GET() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://portfolio.vercel.app"
 
-  const robots = `User-agent: *
+  const robots = `
+User-Agent: *
 Allow: /
 
 Sitemap: ${baseUrl}/api/sitemap

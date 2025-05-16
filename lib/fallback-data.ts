@@ -1,356 +1,515 @@
-"use client"
-
-// Fallback data for when the database is not available
-
 export const fallbackBlogs = [
   {
-    _id: "fallback-blog-1",
+    _id: "blog1",
     title: "Getting Started with Next.js",
     slug: "getting-started-with-nextjs",
     excerpt: "Learn how to build modern web applications with Next.js, the React framework for production.",
-    content:
-      "<p>Next.js gives you the best developer experience with all the features you need for production: hybrid static & server rendering, TypeScript support, smart bundling, route pre-fetching, and more. No config needed.</p><h2>Why Next.js?</h2><p>Next.js provides a solution to many common web development challenges, including:</p><ul><li>Server-side rendering</li><li>Static site generation</li><li>Automatic code splitting</li><li>Client-side routing</li><li>API routes</li><li>Built-in CSS and Sass support</li></ul><p>Getting started with Next.js is easy. Just run <code>npx create-next-app</code> and you're good to go!</p>",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Development",
-    tags: ["Next.js", "React", "JavaScript"],
+    content: `
+      <h2>Introduction to Next.js</h2>
+      <p>Next.js is a React framework that enables functionality such as server-side rendering, static site generation, and API routes. It's designed to make building React applications easier and more efficient.</p>
+      
+      <h2>Key Features</h2>
+      <ul>
+        <li>Server-side rendering</li>
+        <li>Static site generation</li>
+        <li>API routes</li>
+        <li>File-based routing</li>
+        <li>Built-in CSS and Sass support</li>
+      </ul>
+      
+      <h2>Getting Started</h2>
+      <p>To create a new Next.js app, run the following command:</p>
+      <pre><code>npx create-next-app@latest my-next-app</code></pre>
+      
+      <p>This will set up a new Next.js project with all the necessary configurations.</p>
+      
+      <h2>Conclusion</h2>
+      <p>Next.js provides an excellent developer experience with all the features you need for production. It's a great choice for building modern web applications.</p>
+    `,
     author: "Abhishek Sharma",
-    date: "May 15, 2023",
-    readTime: "5 min read",
+    publishedAt: new Date("2023-01-15"),
+    updatedAt: new Date("2023-01-15"),
     isPublished: true,
-    featured: true,
-    createdAt: "2023-05-15T10:00:00.000Z",
-    updatedAt: "2023-05-15T10:00:00.000Z",
-    seo: {
-      metaTitle: "Getting Started with Next.js - A Comprehensive Guide",
-      metaDescription: "Learn how to build modern web applications with Next.js, the React framework for production.",
-      keywords: ["Next.js", "React", "JavaScript", "Web Development"],
-      canonicalUrl: "",
-    },
+    tags: ["Next.js", "React", "Web Development"],
+    category: "Web Development",
+    image: "/placeholder.svg?height=400&width=600",
+    readTime: "5 min read",
   },
   {
-    _id: "fallback-blog-2",
+    _id: "blog2",
     title: "Mastering TypeScript for React Development",
     slug: "mastering-typescript-for-react-development",
     excerpt:
-      "Discover how TypeScript can improve your React development experience with static typing and better tooling.",
-    content:
-      "<p>TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. When used with React, it provides an excellent developer experience with features like type checking, autocompletion, and inline documentation.</p><h2>Benefits of TypeScript with React</h2><p>Using TypeScript with React offers several advantages:</p><ul><li>Catch errors during development instead of runtime</li><li>Better IDE support with autocompletion</li><li>Easier refactoring</li><li>Self-documenting code</li><li>Improved team collaboration</li></ul><p>To get started with TypeScript in your React project, you can use Create React App with the TypeScript template: <code>npx create-react-app my-app --template typescript</code></p>",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Development",
-    tags: ["TypeScript", "React", "JavaScript"],
+      "Discover how TypeScript can improve your React development workflow and help catch errors before they happen.",
+    content: `
+      <h2>Why TypeScript with React?</h2>
+      <p>TypeScript adds static type checking to JavaScript, which can help catch errors during development rather than at runtime. This is especially valuable in React applications where props and state management can get complex.</p>
+      
+      <h2>Setting Up TypeScript with React</h2>
+      <p>You can create a new React project with TypeScript using:</p>
+      <pre><code>npx create-react-app my-app --template typescript</code></pre>
+      
+      <p>Or with Next.js:</p>
+      <pre><code>npx create-next-app@latest --ts my-next-app</code></pre>
+      
+      <h2>Type Checking Props</h2>
+      <p>One of the biggest benefits of TypeScript is type checking for component props:</p>
+      <pre><code>
+interface ButtonProps {
+  text: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+}
+
+const Button: React.FC<ButtonProps> = ({
+  text,
+  onClick,
+  variant = 'primary'
+}) => {
+  return (
+    <button
+      className={\`btn btn-\${variant}\`}
+      onClick={onClick}
+    >
+      {text}
+    </button>
+  );
+};
+      </code></pre>
+      
+      <h2>Conclusion</h2>
+      <p>TypeScript can significantly improve your React development experience byy catching errors early and providing better tooling support.</p>
+    `,
     author: "Abhishek Sharma",
-    date: "June 10, 2023",
-    readTime: "7 min read",
+    publishedAt: new Date("2023-02-20"),
+    updatedAt: new Date("2023-02-20"),
     isPublished: true,
-    featured: true,
-    createdAt: "2023-06-10T10:00:00.000Z",
-    updatedAt: "2023-06-10T10:00:00.000Z",
-    seo: {
-      metaTitle: "Mastering TypeScript for React Development - A Complete Guide",
-      metaDescription:
-        "Discover how TypeScript can improve your React development experience with static typing and better tooling.",
-      keywords: ["TypeScript", "React", "JavaScript", "Web Development"],
-      canonicalUrl: "",
-    },
+    tags: ["TypeScript", "React", "JavaScript"],
+    category: "Web Development",
+    image: "/placeholder.svg?height=400&width=600",
+    readTime: "7 min read",
   },
   {
-    _id: "fallback-blog-3",
+    _id: "blog3",
     title: "Building Responsive UIs with Tailwind CSS",
     slug: "building-responsive-uis-with-tailwind-css",
-    excerpt:
-      "Learn how to create beautiful, responsive user interfaces quickly with Tailwind CSS utility-first approach.",
-    content:
-      "<p>Tailwind CSS is a utility-first CSS framework packed with classes like flex, pt-4, text-center and rotate-90 that can be composed to build any design, directly in your markup. It's designed to be highly customizable and provides low-level utility classes that let you build completely custom designs.</p><h2>Why Choose Tailwind CSS?</h2><p>Tailwind offers several advantages over traditional CSS frameworks:</p><ul><li>No pre-designed components, giving you complete design freedom</li><li>Responsive design utilities built-in</li><li>Dark mode support</li><li>Highly customizable through configuration</li><li>Optimized production builds with PurgeCSS</li></ul><p>To get started with Tailwind CSS, install it via npm: <code>npm install tailwindcss</code> and initialize it with <code>npx tailwindcss init</code></p>",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Design",
-    tags: ["Tailwind CSS", "CSS", "Responsive Design"],
+    excerpt: "Learn how to create beautiful, responsive user interfaces quickly using Tailwind CSS utility classes.",
+    content: `
+      <h2>Introduction to Tailwind CSS</h2>
+      <p>Tailwind CSS is a utility-first CSS framework that allows you to build custom designs without leaving your HTML. Unlike other CSS frameworks that provide pre-designed components, Tailwind gives you low-level utility classes that let you build completely custom designs.</p>
+      
+      <h2>Getting Started with Tailwind</h2>
+      <p>To add Tailwind CSS to your project:</p>
+      <pre><code>npm install -D tailwindcss
+npx tailwindcss init</code></pre>
+      
+      <h2>Responsive Design with Tailwind</h2>
+      <p>Tailwind makes responsive design simple with built-in breakpoint prefixes:</p>
+      <pre><code>&lt;div class="w-full md:w-1/2 lg:w-1/3"&gt;
+  This div is full width on mobile, half width on medium screens,
+  and one-third width on large screens.
+&lt;/div&gt;</code></pre>
+      
+      <h2>Dark Mode</h2>
+      <p>Implementing dark mode is straightforward with Tailwind:</p>
+      <pre><code>&lt;div class="bg-white dark:bg-gray-800 text-black dark:text-white"&gt;
+  This content adapts to light and dark modes.
+&lt;/div&gt;</code></pre>
+      
+      <h2>Conclusion</h2>
+      <p>Tailwind CSS provides a powerful approach to styling that can speed up your development workflow while giving you complete control over your designs.</p>
+    `,
     author: "Abhishek Sharma",
-    date: "July 5, 2023",
-    readTime: "6 min read",
+    publishedAt: new Date("2023-03-10"),
+    updatedAt: new Date("2023-03-10"),
     isPublished: true,
-    featured: false,
-    createdAt: "2023-07-05T10:00:00.000Z",
-    updatedAt: "2023-07-05T10:00:00.000Z",
-    seo: {
-      metaTitle: "Building Responsive UIs with Tailwind CSS - A Developer's Guide",
-      metaDescription:
-        "Learn how to create beautiful, responsive user interfaces quickly with Tailwind CSS utility-first approach.",
-      keywords: ["Tailwind CSS", "CSS", "Responsive Design", "Web Development"],
-      canonicalUrl: "",
-    },
+    tags: ["CSS", "Tailwind CSS", "Responsive Design"],
+    category: "Web Design",
+    image: "/placeholder.svg?height=400&width=600",
+    readTime: "6 min read",
   },
   {
-    _id: "fallback-blog-4",
+    _id: "blog4",
     title: "Introduction to Server Components in React",
     slug: "introduction-to-server-components-in-react",
-    excerpt: "Explore the new Server Components feature in React and how it can improve your application performance.",
-    content:
-      "<p>React Server Components represent a new paradigm for building React applications. They allow developers to build applications that span the server and client, combining the rich interactivity of client-side apps with the improved performance of traditional server rendering.</p><h2>Key Benefits of Server Components</h2><p>Server Components offer several advantages:</p><ul><li>Zero bundle size impact for server components</li><li>Access to the server ecosystem (databases, file systems, etc.)</li><li>Automatic code splitting</li><li>No client-server waterfalls</li><li>Improved loading performance</li></ul><p>Server Components are still in development, but you can try them out in Next.js 13+ by using the App Router and creating server components by default.</p>",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Development",
-    tags: ["React", "Server Components", "Performance"],
+    excerpt:
+      "Explore the new Server Components feature in React and how it can improve your application's performance.",
+    content: `
+      <h2>What Are React Server Components?</h2>
+      <p>React Server Components are a new feature that allows components to render on the server, reducing the JavaScript sent to the client and improving performance.</p>
+      
+      <h2>Benefits of Server Components</h2>
+      <ul>
+        <li>Reduced bundle size</li>
+        <li>Improved initial page load</li>
+        <li>Better SEO</li>
+        <li>Direct access to server-only resources</li>
+      </ul>
+      
+      <h2>Using Server Components in Next.js</h2>
+      <p>Next.js 13+ has built-in support for React Server Components. By default, all components in the app directory are Server Components unless specified otherwise:</p>
+      
+      <pre><code>// This is a Server Component by default
+export default function ProductPage({ params }) {
+  // This code runs on the server
+  const product = await getProduct(params.id);
+  
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;{product.name}&lt;/h1&gt;
+      &lt;p&gt;{product.description}&lt;/p&gt;
+      &lt;ClientComponent product={product} /&gt;
+    &lt;/div&gt;
+  );
+}
+
+// This is explicitly a Client Component
+'use client';
+
+import { useState } from "react"
+
+function ClientComponent({ product }) {
+  // This code runs on the client
+  const [quantity, setQuantity] = useState(1);
+  
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() => setQuantity(q => q + 1)}&gt;
+        Add to Cart ({quantity})
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+      
+      <h2>Conclusion</h2>
+      <p>Server Components represent a significant evolution in React's architecture, allowing developers to build applications that better leverage both server and client capabilities.</p>
+    `,
     author: "Abhishek Sharma",
-    date: "August 20, 2023",
-    readTime: "8 min read",
+    publishedAt: new Date("2023-04-05"),
+    updatedAt: new Date("2023-04-05"),
     isPublished: true,
-    featured: true,
-    createdAt: "2023-08-20T10:00:00.000Z",
-    updatedAt: "2023-08-20T10:00:00.000Z",
-    seo: {
-      metaTitle: "Introduction to Server Components in React - The Future of React",
-      metaDescription:
-        "Explore the new Server Components feature in React and how it can improve your application performance.",
-      keywords: ["React", "Server Components", "Performance", "Web Development"],
-      canonicalUrl: "",
-    },
+    tags: ["React", "Server Components", "Next.js"],
+    category: "Web Development",
+    image: "/placeholder.svg?height=400&width=600",
+    readTime: "8 min read",
   },
   {
-    _id: "fallback-blog-5",
+    _id: "blog5",
     title: "Creating Animations with Framer Motion",
     slug: "creating-animations-with-framer-motion",
     excerpt: "Learn how to add beautiful animations to your React applications using Framer Motion.",
-    content:
-      "<p>Framer Motion is a production-ready motion library for React that makes it easy to create stunning animations and interactive user interfaces. It provides a simple declarative syntax that makes complex animations and gestures easy to implement.</p><h2>Getting Started with Framer Motion</h2><p>Here's how to get started with basic animations:</p><pre><code>import { motion } from 'framer-motion';\n\nfunction AnimatedBox() {\n  return (\n    &lt;motion.div\n      initial={{ opacity: 0 }}\n      animate={{ opacity: 1 }}\n      transition={{ duration: 1 }}\n    &gt;\n      Hello Framer Motion!\n    &lt;/motion.div&gt;\n  );\n}</code></pre><p>Framer Motion supports gestures, variants for orchestrating animations, and layout animations for smooth transitions when elements change position or size.</p>",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Design",
-    tags: ["Animation", "React", "Framer Motion"],
+    content: `
+      <h2>Introduction to Framer Motion</h2>
+      <p>Framer Motion is a production-ready motion library for React that makes it easy to create animations and interactive UIs.</p>
+      
+      <h2>Getting Started</h2>
+      <p>Install Framer Motion in your React project:</p>
+      <pre><code>npm install framer-motion</code></pre>
+      
+      <h2>Basic Animations</h2>
+      <p>Creating a simple animation with Framer Motion is straightforward:</p>
+      <pre><code>import { motion } from 'framer-motion';
+
+function AnimatedBox() {
+  return (
+    &lt;motion.div
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className="box"
+    /&gt;
+  );
+}</code></pre>
+      
+      <h2>Page Transitions</h2>
+      <p>You can create smooth page transitions using Framer Motion's AnimatePresence:</p>
+      <pre><code>import { AnimatePresence, motion } from 'framer-motion';
+import { useRouter } from 'next/router';
+
+function Layout({ children }) {
+  const router = useRouter();
+  
+  return (
+    &lt;AnimatePresence mode="wait"&gt;
+      &lt;motion.div
+        key={router.pathname}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.3 }}
+      &gt;
+        {children}
+      &lt;/motion.div&gt;
+    &lt;/AnimatePresence&gt;
+  );
+}</code></pre>
+      
+      <h2>Conclusion</h2>
+      <p>Framer Motion provides a powerful yet simple API for creating animations in React applications, helping you build more engaging user experiences.</p>
+    `,
     author: "Abhishek Sharma",
-    date: "September 15, 2023",
-    readTime: "6 min read",
+    publishedAt: new Date("2023-05-12"),
+    updatedAt: new Date("2023-05-12"),
     isPublished: true,
-    featured: false,
-    createdAt: "2023-09-15T10:00:00.000Z",
-    updatedAt: "2023-09-15T10:00:00.000Z",
-    seo: {
-      metaTitle: "Creating Animations with Framer Motion - A Complete Guide",
-      metaDescription: "Learn how to add beautiful animations to your React applications using Framer Motion.",
-      keywords: ["Animation", "React", "Framer Motion", "Web Development"],
-      canonicalUrl: "",
-    },
+    tags: ["React", "Animation", "Framer Motion"],
+    category: "Web Design",
+    image: "/placeholder.svg?height=400&width=600",
+    readTime: "6 min read",
   },
 ]
 
 export const fallbackProjects = [
   {
-    _id: "fallback-project-1",
+    _id: "project1",
     title: "E-commerce Platform",
-    description:
-      "A full-featured e-commerce platform built with Next.js, TypeScript, and Tailwind CSS. Includes product catalog, shopping cart, user authentication, and payment processing.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Development",
-    tags: ["Next.js", "TypeScript", "Tailwind CSS", "Stripe"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/e-commerce-platform",
+    slug: "e-commerce-platform",
+    description: "A full-featured e-commerce platform built with Next.js, MongoDB, and Stripe integration.",
+    content:
+      "This project is a complete e-commerce solution with product management, cart functionality, user authentication, and payment processing using Stripe.",
+    image: "/placeholder.svg?height=400&width=600",
+    technologies: ["Next.js", "MongoDB", "Stripe", "Tailwind CSS"],
+    githubUrl: "https://github.com/username/e-commerce-platform",
+    demoUrl: "https://e-commerce-platform.vercel.app",
     featured: true,
-    createdAt: "2023-01-15T10:00:00.000Z",
-    updatedAt: "2023-01-15T10:00:00.000Z",
+    order: 1,
   },
   {
-    _id: "fallback-project-2",
+    _id: "project2",
     title: "Task Management App",
-    description:
-      "A productivity application for managing tasks and projects. Features include drag-and-drop task organization, priority levels, due dates, and team collaboration.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Application",
-    tags: ["React", "Redux", "Firebase", "Material UI"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/task-management-app",
+    slug: "task-management-app",
+    description: "A collaborative task management application with real-time updates and team features.",
+    content:
+      "This task management app allows teams to collaborate on projects, assign tasks, track progress, and receive real-time updates when changes are made.",
+    image: "/placeholder.svg?height=400&width=600",
+    technologies: ["React", "Firebase", "Material UI", "Redux"],
+    githubUrl: "https://github.com/username/task-management-app",
+    demoUrl: "https://task-management-app.vercel.app",
     featured: true,
-    createdAt: "2023-02-20T10:00:00.000Z",
-    updatedAt: "2023-02-20T10:00:00.000Z",
+    order: 2,
   },
   {
-    _id: "fallback-project-3",
-    title: "Portfolio Website",
-    description:
-      "A modern portfolio website with dark mode, animations, and responsive design. Built with Next.js and Tailwind CSS.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Design",
-    tags: ["Next.js", "Tailwind CSS", "Framer Motion"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/portfolio-website",
+    _id: "project3",
+    title: "AI Image Generator",
+    slug: "ai-image-generator",
+    description: "An application that generates unique images based on text prompts using AI.",
+    content:
+      "This project uses OpenAI's DALL-E API to generate images from text descriptions. Users can create, save, and share their generated images.",
+    image: "/placeholder.svg?height=400&width=600",
+    technologies: ["Next.js", "OpenAI API", "Cloudinary", "Tailwind CSS"],
+    githubUrl: "https://github.com/username/ai-image-generator",
+    demoUrl: "https://ai-image-generator.vercel.app",
     featured: true,
-    createdAt: "2023-03-10T10:00:00.000Z",
-    updatedAt: "2023-03-10T10:00:00.000Z",
+    order: 3,
   },
   {
-    _id: "fallback-project-4",
-    title: "Weather Dashboard",
-    description:
-      "A weather application that displays current conditions and forecasts for any location. Features include interactive maps, hourly forecasts, and severe weather alerts.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Application",
-    tags: ["React", "OpenWeather API", "Leaflet Maps"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/weather-dashboard",
+    _id: "project4",
+    title: "Personal Finance Dashboard",
+    slug: "personal-finance-dashboard",
+    description: "A dashboard for tracking personal finances, expenses, and investments.",
+    content:
+      "This application helps users track their income, expenses, investments, and financial goals with interactive charts and reports.",
+    image: "/placeholder.svg?height=400&width=600",
+    technologies: ["React", "D3.js", "Node.js", "PostgreSQL"],
+    githubUrl: "https://github.com/username/finance-dashboard",
+    demoUrl: "https://finance-dashboard.vercel.app",
     featured: false,
-    createdAt: "2023-04-05T10:00:00.000Z",
-    updatedAt: "2023-04-05T10:00:00.000Z",
+    order: 4,
   },
   {
-    _id: "fallback-project-5",
-    title: "Blog Platform",
-    description:
-      "A full-featured blog platform with markdown support, categories, tags, and a commenting system. Built with Next.js and MongoDB.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Development",
-    tags: ["Next.js", "MongoDB", "Markdown"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/blog-platform",
-    featured: true,
-    createdAt: "2023-05-15T10:00:00.000Z",
-    updatedAt: "2023-05-15T10:00:00.000Z",
-  },
-  {
-    _id: "fallback-project-6",
-    title: "Recipe Finder",
-    description:
-      "A recipe search application that allows users to find recipes based on ingredients, dietary restrictions, and cuisine types.",
-    image: "/placeholder.svg?height=600&width=800",
-    category: "Web Application",
-    tags: ["React", "Spoonacular API", "Styled Components"],
-    demoUrl: "https://example.com/demo",
-    sourceUrl: "https://github.com/username/recipe-finder",
+    _id: "project5",
+    title: "Weather Forecast App",
+    slug: "weather-forecast-app",
+    description: "A weather application that provides current conditions and forecasts for any location.",
+    content:
+      "This weather app uses the OpenWeatherMap API to display current weather conditions and 7-day forecasts for any location worldwide.",
+    image: "/placeholder.svg?height=400&width=600",
+    technologies: ["React Native", "Expo", "OpenWeatherMap API"],
+    githubUrl: "https://github.com/username/weather-app",
+    demoUrl: "https://weather-app.vercel.app",
     featured: false,
-    createdAt: "2023-06-20T10:00:00.000Z",
-    updatedAt: "2023-06-20T10:00:00.000Z",
+    order: 5,
   },
 ]
 
 export const fallbackTestimonials = [
   {
-    _id: "fallback-testimonial-1",
+    _id: "testimonial1",
     name: "John Smith",
     position: "CTO at TechCorp",
-    company: "TechCorp",
     content:
-      "Abhishek is an exceptional developer who delivered our project on time and exceeded our expectations. His attention to detail and problem-solving skills are impressive.",
+      "Working with Abhishek was a fantastic experience. His technical skills and attention to detail resulted in a product that exceeded our expectations.",
     rating: 5,
     image: "/placeholder.svg?height=100&width=100",
     featured: true,
-    createdAt: "2023-01-10T10:00:00.000Z",
-    updatedAt: "2023-01-10T10:00:00.000Z",
+    order: 1,
   },
   {
-    _id: "fallback-testimonial-2",
+    _id: "testimonial2",
     name: "Sarah Johnson",
-    position: "Product Manager",
-    company: "InnovateX",
+    position: "Founder of StartupX",
     content:
-      "Working with Abhishek was a pleasure. He understood our requirements quickly and suggested improvements that made our product even better. Highly recommended!",
+      "Abhishek delivered our project on time and on budget. His communication was excellent throughout the process, and he was always willing to go the extra mile.",
     rating: 5,
     image: "/placeholder.svg?height=100&width=100",
     featured: true,
-    createdAt: "2023-02-15T10:00:00.000Z",
-    updatedAt: "2023-02-15T10:00:00.000Z",
+    order: 2,
   },
   {
-    _id: "fallback-testimonial-3",
+    _id: "testimonial3",
     name: "Michael Chen",
-    position: "Founder",
-    company: "StartupHub",
+    position: "Product Manager at InnovateCo",
     content:
-      "Abhishek helped us build our MVP in record time. His technical expertise and communication skills made the development process smooth and efficient.",
+      "I was impressed by Abhishek's ability to understand our business needs and translate them into technical solutions. He's not just a developer but a true problem solver.",
     rating: 4,
     image: "/placeholder.svg?height=100&width=100",
     featured: true,
-    createdAt: "2023-03-20T10:00:00.000Z",
-    updatedAt: "2023-03-20T10:00:00.000Z",
+    order: 3,
   },
 ]
 
-// Export work experience and education separately as required
 export const fallbackWorkExperience = [
   {
-    _id: "fallback-work-1",
+    _id: "exp1",
     title: "Senior Frontend Developer",
-    company: "TechCorp",
+    company: "TechCorp Inc.",
     location: "San Francisco, CA",
-    period: "2021 - Present",
+    startDate: new Date("2021-03-01"),
+    endDate: null,
+    current: true,
     description:
-      "Leading the frontend development team in building modern web applications using React, Next.js, and TypeScript. Implementing responsive designs, optimizing performance, and ensuring accessibility compliance.",
+      "Leading the frontend development team in building modern web applications using React, Next.js, and TypeScript. Implemented CI/CD pipelines and improved performance by 40%.",
     type: "work",
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    order: 1,
   },
   {
-    _id: "fallback-work-2",
-    title: "Frontend Developer",
-    company: "InnovateX",
+    _id: "exp2",
+    title: "Full Stack Developer",
+    company: "InnovateCo",
     location: "New York, NY",
-    period: "2019 - 2021",
+    startDate: new Date("2019-06-01"),
+    endDate: new Date("2021-02-28"),
+    current: false,
     description:
-      "Developed and maintained multiple client-facing web applications. Collaborated with designers and backend developers to implement new features and improve user experience.",
+      "Developed and maintained full-stack applications using React, Node.js, and MongoDB. Collaborated with UX designers to implement responsive designs and improve user experience.",
     type: "work",
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    order: 2,
   },
   {
-    _id: "fallback-work-3",
-    title: "Web Developer",
-    company: "DigitalSolutions",
-    location: "Boston, MA",
-    period: "2017 - 2019",
+    _id: "exp3",
+    title: "Junior Web Developer",
+    company: "StartupX",
+    location: "Remote",
+    startDate: new Date("2018-01-15"),
+    endDate: new Date("2019-05-30"),
+    current: false,
     description:
-      "Built responsive websites and web applications for various clients. Implemented frontend designs using HTML, CSS, and JavaScript. Worked with PHP and MySQL for backend functionality.",
+      "Built and maintained client websites using HTML, CSS, JavaScript, and WordPress. Worked directly with clients to gather requirements and implement requested features.",
     type: "work",
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    order: 3,
   },
 ]
 
 export const fallbackEducation = [
   {
-    _id: "fallback-education-1",
-    institution: "Massachusetts Institute of Technology",
+    _id: "edu1",
+    institution: "University of Technology",
     degree: "Master of Science in Computer Science",
     field: "Computer Science",
-    location: "Cambridge, MA",
-    period: "2015 - 2017",
+    location: "San Francisco, CA",
+    startDate: new Date("2016-09-01"),
+    endDate: new Date("2018-05-30"),
+    current: false,
     description:
-      "Specialized in Human-Computer Interaction and Web Technologies. Completed thesis on improving web accessibility for users with disabilities.",
+      "Specialized in web technologies and artificial intelligence. Completed thesis on 'Optimizing React Applications for Performance'.",
     type: "education",
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    order: 1,
   },
   {
-    _id: "fallback-education-2",
-    institution: "University of California, Berkeley",
-    degree: "Bachelor of Science in Computer Science",
-    field: "Computer Science",
-    location: "Berkeley, CA",
-    period: "2011 - 2015",
-    description:
-      "Focused on software engineering and web development. Participated in multiple hackathons and coding competitions.",
+    _id: "edu2",
+    institution: "State University",
+    degree: "Bachelor of Science in Software Engineering",
+    field: "Software Engineering",
+    location: "Chicago, IL",
+    startDate: new Date("2012-09-01"),
+    endDate: new Date("2016-05-30"),
+    current: false,
+    description: "Graduated with honors. Participated in multiple hackathons and coding competitions.",
     type: "education",
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    order: 2,
+  },
+]
+
+export const fallbackServices = [
+  {
+    _id: "service1",
+    title: "Web Development",
+    description:
+      "Custom website and web application development using modern technologies like React, Next.js, and Node.js.",
+    icon: "Code",
+    order: 1,
+  },
+  {
+    _id: "service2",
+    title: "UI/UX Design",
+    description:
+      "Creating intuitive and visually appealing user interfaces with a focus on user experience and accessibility.",
+    icon: "Palette",
+    order: 2,
+  },
+  {
+    _id: "service3",
+    title: "Mobile App Development",
+    description:
+      "Building cross-platform mobile applications using React Native and Flutter for iOS and Android devices.",
+    icon: "Smartphone",
+    order: 3,
+  },
+  {
+    _id: "service4",
+    title: "E-commerce Solutions",
+    description:
+      "Developing online stores with payment integration, inventory management, and customer relationship features.",
+    icon: "ShoppingCart",
+    order: 4,
   },
 ]
 
 export const fallbackFiles = [
   {
-    _id: "fallback-file-1",
+    _id: "file1",
     name: "resume.pdf",
     url: "/placeholder.svg?height=800&width=600",
     type: "application/pdf",
     size: 1024000,
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    uploadedAt: new Date("2023-01-15"),
   },
   {
-    _id: "fallback-file-2",
-    name: "profile-picture.jpg",
-    url: "/placeholder.svg?height=400&width=400",
-    type: "image/jpeg",
-    size: 512000,
-    createdAt: "2023-01-01T10:00:00.000Z",
-    updatedAt: "2023-01-01T10:00:00.000Z",
+    _id: "file2",
+    name: "portfolio-screenshot.png",
+    url: "/placeholder.svg?height=600&width=800",
+    type: "image/png",
+    size: 2048000,
+    uploadedAt: new Date("2023-02-20"),
   },
 ]
 
-// For backward compatibility
-export const fallbackExperiences = {
-  work: fallbackWorkExperience,
-  education: fallbackEducation,
+export const fallbackSettings = {
+  _id: "settings1",
+  siteTitle: "Abhishek Sharma - Portfolio",
+  siteDescription: "Personal portfolio and blog of Abhishek Sharma, a full-stack web developer.",
+  siteKeywords: "web development, react, next.js, javascript, typescript",
+  siteUrl: "https://abhishek-sharma.com",
+  siteLogo: "/placeholder.svg?height=200&width=200",
+  siteAuthor: "Abhishek Sharma",
+  email: "contact@abhishek-sharma.com",
+  phone: "+1 (123) 456-7890",
+  address: "San Francisco, CA",
+  socialLinks: {
+    github: "https://github.com/username",
+    linkedin: "https://linkedin.com/in/username",
+    twitter: "https://twitter.com/username",
+  },
+  updatedAt: new Date("2023-05-01"),
 }

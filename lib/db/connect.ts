@@ -71,4 +71,8 @@ async function dbConnect() {
   return cached.conn
 }
 
+// Add the named export for connectToDatabase
+export const connectToDatabase = dbConnect
+
+// Keep the default export for backward compatibility
 export default dbConnect

@@ -1,118 +1,18 @@
+import { getProjects } from "@/lib/actions/project-actions"
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Github, ArrowLeft } from 'lucide-react'
+import { ExternalLink, Github, ArrowLeft } from "lucide-react"
 
 export const metadata = {
   title: "Projects | John Doe Portfolio",
   description: "Explore all projects by John Doe, full-stack developer and UI/UX designer",
 }
 
-export default function ProjectsPage() {
-  const projects = [
-    {
-      id: 1,
-      title: "E-Commerce Platform",
-      description:
-        "A full-featured e-commerce platform with product management, cart functionality, and payment processing.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["Next.js", "TypeScript", "MongoDB", "Stripe"],
-      category: "fullstack",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Portfolio Website",
-      description: "A modern portfolio website with animations, dark mode, and responsive design.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["React", "Tailwind CSS", "Framer Motion"],
-      category: "frontend",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "Task Management App",
-      description: "A collaborative task management application with real-time updates and team features.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["React", "Node.js", "Socket.io", "MongoDB"],
-      category: "fullstack",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "Weather Dashboard",
-      description: "A weather dashboard with location search, forecasts, and interactive maps.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["JavaScript", "Weather API", "Chart.js"],
-      category: "frontend",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-    {
-      id: 5,
-      title: "Content Management System",
-      description: "A headless CMS with custom content types, user roles, and API endpoints.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["Node.js", "Express", "MongoDB", "GraphQL"],
-      category: "backend",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: true,
-    },
-    {
-      id: 6,
-      title: "Social Media Dashboard",
-      description: "A dashboard for managing and analyzing social media accounts and campaigns.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["React", "Redux", "Social APIs", "Chart.js"],
-      category: "frontend",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-    {
-      id: 7,
-      title: "Real Estate Listing Platform",
-      description: "A platform for real estate agents to list properties and for users to search and filter listings.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["Next.js", "MongoDB", "Google Maps API", "AWS S3"],
-      category: "fullstack",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-    {
-      id: 8,
-      title: "Health & Fitness Tracker",
-      description: "A mobile-first application for tracking workouts, nutrition, and health metrics.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["React Native", "Firebase", "Chart.js", "Health APIs"],
-      category: "mobile",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-    {
-      id: 9,
-      title: "Learning Management System",
-      description: "An educational platform with course creation, student management, and progress tracking.",
-      image: "/placeholder.svg?height=600&width=800",
-      tags: ["React", "Node.js", "PostgreSQL", "AWS"],
-      category: "fullstack",
-      demoUrl: "#",
-      githubUrl: "#",
-      featured: false,
-    },
-  ]
+export default async function ProjectsPage() {
+  const projects = await getProjects()
 
   return (
     <main className="py-20 bg-background">
@@ -136,7 +36,7 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project) => (
             <Card
-              key={project.id}
+              key={project.slug}
               className="overflow-hidden group hover:shadow-lg transition-shadow duration-300 glass-card border-0"
             >
               <div className="relative aspect-video overflow-hidden">
@@ -157,9 +57,9 @@ export default function ProjectsPage() {
               <CardHeader>
                 <CardTitle>{project.title}</CardTitle>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {project.tags.map((tag, index) => (
+                  {project.technologies?.map((tech, index) => (
                     <Badge key={index} variant="secondary" className="font-normal">
-                      {tag}
+                      {tech}
                     </Badge>
                   ))}
                 </div>
@@ -170,19 +70,23 @@ export default function ProjectsPage() {
               </CardContent>
 
               <CardFooter className="flex justify-between">
-                <Button asChild variant="ghost" size="sm">
-                  <Link href={project.demoUrl} target="_blank">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Live Demo
-                  </Link>
-                </Button>
+                {project.demoUrl && (
+                  <Button asChild variant="ghost" size="sm">
+                    <Link href={project.demoUrl} target="_blank">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Live Demo
+                    </Link>
+                  </Button>
+                )}
 
-                <Button asChild variant="ghost" size="sm">
-                  <Link href={project.githubUrl} target="_blank">
-                    <Github className="mr-2 h-4 w-4" />
-                    Source Code
-                  </Link>
-                </Button>
+                {project.githubUrl && (
+                  <Button asChild variant="ghost" size="sm">
+                    <Link href={project.githubUrl} target="_blank">
+                      <Github className="mr-2 h-4 w-4" />
+                      Source Code
+                    </Link>
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}

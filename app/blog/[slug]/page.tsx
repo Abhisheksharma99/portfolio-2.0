@@ -14,13 +14,13 @@ interface BlogPostParams {
 }
 
 // Generate static params for all blog posts
-export async function generateStaticParams() {
+export const generateStaticParams = async () => {
   try {
     const slugs = await getAllBlogSlugs()
     return slugs.map((slug) => ({ slug }))
   } catch (error) {
-    console.error("Error fetching blog slugs:", error)
-    // Use hardcoded fallback slugs if there's an error
+    console.error("Error generating static params:", error)
+    // Return hardcoded slugs as fallback
     return [
       { slug: "getting-started-with-nextjs" },
       { slug: "mastering-typescript-for-react-development" },
@@ -87,7 +87,7 @@ export async function generateMetadata({ params }: BlogPostParams): Promise<Meta
   }
 }
 
-export default async function BlogPostPage({ params }: BlogPostParams) {
+export default async function BlogPage({ params }: { params: { slug: string } }) {
   try {
     const blog = await getBlogBySlug(params.slug)
 
@@ -204,7 +204,7 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
       </main>
     )
   } catch (error) {
-    console.error("Error rendering blog post:", error)
+    console.error("Error in blog page:", error)
     notFound()
   }
 }

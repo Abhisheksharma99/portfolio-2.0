@@ -1,132 +1,123 @@
 "use server"
 
-import dbConnect from "@/lib/db/connect"
-import Project, { type IProject } from "@/lib/db/models/project"
-import { revalidatePath } from "next/cache"
+import { connectToDatabase } from "@/lib/db/connect"
 import { fallbackProjects } from "@/lib/fallback-data"
+import { revalidatePath } from "next/cache"
 
 export async function getProjects() {
   try {
-    const db = await dbConnect()
-    // If database connection failed, use fallback data
-    if (!db) {
-      console.log("Using fallback projects data")
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
       return fallbackProjects
     }
 
-    const projects = await Project.find().sort({ createdAt: -1 })
+    await connectToDatabase()
+    const projects = await Project.find({}).sort({ order: 1 }).lean()
 
-    if (projects.length === 0) {
-      return fallbackProjects
-    }
-
-    return JSON.parse(JSON.stringify(projects))
+    return projects.length > 0 ? projects : fallbackProjects
   } catch (error) {
     console.error("Error fetching projects:", error)
     return fallbackProjects
   }
 }
 
-export async function getFeaturedProjects(limit = 6) {
+export async function getProjectBySlug(slug: string) {
   try {
-    const db = await dbConnect()
-    // If database connection failed, use fallback data
-    if (!db) {
-      console.log("Using fallback featured projects data")
-      return fallbackProjects.filter((project) => project.featured).slice(0, limit)
-    }
+    // Find the project in fallback data first
+    const fallbackProject = fallbackProjects.find((project) => project.slug === slug)
 
-    const projects = await Project.find({ featured: true }).sort({ createdAt: -1 }).limit(limit)
-
-    if (projects.length === 0) {
-      return fallbackProjects.filter((project) => project.featured).slice(0, limit)
-    }
-
-    return JSON.parse(JSON.stringify(projects))
-  } catch (error) {
-    console.error("Error fetching featured projects:", error)
-    return fallbackProjects.filter((project) => project.featured).slice(0, limit)
-  }
-}
-
-export async function getProjectsByCategory(category: string) {
-  try {
-    const db = await dbConnect()
-    // If database connection failed, use fallback data
-    if (!db) {
-      console.log("Using fallback projects by category data")
-      return fallbackProjects.filter((project) => project.category === category)
-    }
-
-    const projects = await Project.find({ category }).sort({ createdAt: -1 })
-
-    if (projects.length === 0) {
-      return fallbackProjects.filter((project) => project.category === category)
-    }
-
-    return JSON.parse(JSON.stringify(projects))
-  } catch (error) {
-    console.error("Error fetching projects by category:", error)
-    return fallbackProjects.filter((project) => project.category === category)
-  }
-}
-
-export async function getProjectById(id: string) {
-  try {
-    const db = await dbConnect()
-    // If database connection failed, use fallback data
-    if (!db) {
-      console.log("Using fallback project by id data")
-      const fallbackProject = fallbackProjects.find((project) => project._id === id)
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
       return fallbackProject || null
     }
 
-    const project = await Project.findById(id)
+    await connectToDatabase()
+    const project = await Project.findOne({ slug }).lean()
 
-    if (!project) {
-      // Find a fallback project with the matching id
-      const fallbackProject = fallbackProjects.find((project) => project._id === id)
-      return fallbackProject || null
-    }
-
-    return JSON.parse(JSON.stringify(project))
+    return project || fallbackProject || null
   } catch (error) {
-    console.error("Error fetching project by id:", error)
-    // Find a fallback project with the matching id
-    const fallbackProject = fallbackProjects.find((project) => project._id === id)
-    return fallbackProject || null
+    console.error("Error fetching project by slug:", error)
+    return fallbackProjects.find((project) => project.slug === slug) || null
   }
 }
 
-// Admin actions
-export async function createProject(projectData: Partial<IProject>) {
+export async function getAllProjects() {
   try {
-    const db = await dbConnect()
-    if (!db) {
-      throw new Error("Database connection failed")
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
+      return fallbackProjects
     }
 
-    const project = await Project.create(projectData)
+    await connectToDatabase()
+    const projects = await Project.find({}).sort({ order: 1 }).lean()
+
+    return projects.length > 0 ? projects : fallbackProjects
+  } catch (error) {
+    console.error("Error fetching all projects:", error)
+    return fallbackProjects
+  }
+}
+
+export async function createProject(projectData: any) {
+  try {
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
+      throw new Error("Failed to import Project model")
+    }
+
+    await connectToDatabase()
+    const newProject = await Project.create(projectData)
+
     revalidatePath("/projects")
     revalidatePath("/admin/projects")
-    return JSON.parse(JSON.stringify(project))
+
+    return newProject
   } catch (error) {
     console.error("Error creating project:", error)
     throw error
   }
 }
 
-export async function updateProject(id: string, projectData: Partial<IProject>) {
+export async function updateProject(id: string, projectData: any) {
   try {
-    const db = await dbConnect()
-    if (!db) {
-      throw new Error("Database connection failed")
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
+      throw new Error("Failed to import Project model")
     }
 
-    const project = await Project.findByIdAndUpdate(id, projectData, { new: true })
+    await connectToDatabase()
+    const updatedProject = await Project.findByIdAndUpdate(id, projectData, { new: true }).lean()
+
     revalidatePath("/projects")
+    revalidatePath(`/projects/${projectData.slug}`)
     revalidatePath("/admin/projects")
-    return JSON.parse(JSON.stringify(project))
+
+    return updatedProject
   } catch (error) {
     console.error("Error updating project:", error)
     throw error
@@ -135,17 +126,46 @@ export async function updateProject(id: string, projectData: Partial<IProject>) 
 
 export async function deleteProject(id: string) {
   try {
-    const db = await dbConnect()
-    if (!db) {
-      throw new Error("Database connection failed")
+    // Try to import the Project model dynamically
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
+      throw new Error("Failed to import Project model")
     }
 
+    await connectToDatabase()
     await Project.findByIdAndDelete(id)
+
     revalidatePath("/projects")
     revalidatePath("/admin/projects")
+
     return { success: true }
   } catch (error) {
     console.error("Error deleting project:", error)
     throw error
+  }
+}
+
+export async function getProjectById(id: string) {
+  try {
+    let Project
+    try {
+      const { default: ProjectModel } = await import("@/lib/db/models/project")
+      Project = ProjectModel
+    } catch (error) {
+      console.error("Error importing Project model:", error)
+      return fallbackProjects.find((project) => project._id === id) || null
+    }
+
+    await connectToDatabase()
+    const project = await Project.findById(id).lean()
+
+    return project || fallbackProjects.find((project) => project._id === id) || null
+  } catch (error) {
+    console.error("Error fetching project by ID:", error)
+    return fallbackProjects.find((project) => project._id === id) || null
   }
 }
