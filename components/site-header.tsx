@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Menu, X } from "lucide-react"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,67 +22,97 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const navItems = [
+    { name: "About", href: "/#about" },
+    { name: "Projects", href: "/projects" },
+    { name: "Blog", href: "/blog" },
+    { name: "Services", href: "/#services" },
+    { name: "Contact", href: "/#contact" },
+  ]
+
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md border-b" : "bg-transparent"
-      }`}
+      className={cn(
+        "fixed top-0 w-full z-50 transition-all duration-300",
+        isScrolled ? "bg-background/80 backdrop-blur-md border-b shadow-sm" : "bg-transparent",
+      )}
     >
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="relative w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AS</span>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center">
+              <span
+                className={cn(
+                  "text-xl font-bold transition-colors",
+                  isScrolled || pathname !== "/" ? "text-foreground" : "text-white",
+                )}
+              >
+                Abhishek Sharma
+              </span>
+            </Link>
           </div>
-          <span className="font-bold text-xl">Abhishek Sharma</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="#about" className="text-sm font-medium hover:text-primary transition-colors">
-            About
-          </Link>
-          <Link href="#projects" className="text-sm font-medium hover:text-primary transition-colors">
-            Projects
-          </Link>
-          <Link href="#blog" className="text-sm font-medium hover:text-primary transition-colors">
-            Blog
-          </Link>
-          <Link href="#services" className="text-sm font-medium hover:text-primary transition-colors">
-            Services
-          </Link>
-          <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">
-            Contact
-          </Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <ModeToggle />
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="glass-card">
-              <nav className="flex flex-col gap-4 mt-8">
-                <Link href="#about" className="text-lg font-medium hover:text-primary transition-colors">
-                  About
-                </Link>
-                <Link href="#projects" className="text-lg font-medium hover:text-primary transition-colors">
-                  Projects
-                </Link>
-                <Link href="#blog" className="text-lg font-medium hover:text-primary transition-colors">
-                  Blog
-                </Link>
-                <Link href="#services" className="text-lg font-medium hover:text-primary transition-colors">
-                  Services
-                </Link>
-                <Link href="#contact" className="text-lg font-medium hover:text-primary transition-colors">
-                  Contact
-                </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
+
+          {/* Desktop navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-foreground/80",
+                  isScrolled || pathname !== "/" ? "text-foreground" : "text-white",
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
+            <ModeToggle />
+          </nav>
+
+          {/* Mobile menu button */}
+          <div className="flex md:hidden items-center space-x-2">
+            <ModeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={cn(isScrolled || pathname !== "/" ? "text-foreground" : "text-white")}
+            >
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Toggle menu</span>
+            </Button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile navigation */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
+            <div className="flex h-16 items-center justify-between">
+              <Link href="/" className="flex items-center" onClick={() => setIsMobileMenuOpen(false)}>
+                <span className="text-xl font-bold">Abhishek Sharma</span>
+              </Link>
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                <X className="h-6 w-6" />
+                <span className="sr-only">Close menu</span>
+              </Button>
+            </div>
+            <nav className="flex flex-col space-y-6 py-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="text-foreground text-lg font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
     </header>
   )
 }

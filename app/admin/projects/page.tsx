@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Plus, MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { useProjectStore } from "@/lib/stores/project-store"
+import { getProjects, deleteProject } from "@/lib/actions/project-actions"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,17 +21,36 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { useRouter } from "next/navigation"
 
 export default function ProjectsPage() {
+  const router = useRouter()
   const { toast } = useToast()
-  const { projects, deleteProject, initializeProjects } = useProjectStore()
+  const [projects, setProjects] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
-  const [filteredProjects, setFilteredProjects] = useState(projects)
+  const [filteredProjects, setFilteredProjects] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Initialize projects from localStorage if available
-    initializeProjects()
-  }, [initializeProjects])
+    const fetchProjects = async () => {
+      try {
+        const data = await getProjects()
+        setProjects(data)
+        setFilteredProjects(data)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Error fetching projects:", error)
+        toast({
+          title: "Error",
+          description: "Failed to fetch projects. Please try again.",
+          variant: "destructive",
+        })
+        setIsLoading(false)
+      }
+    }
+
+    fetchProjects()
+  }, [toast])
 
   useEffect(() => {
     // Filter projects based on search term
@@ -50,12 +69,33 @@ export default function ProjectsPage() {
     }
   }, [projects, searchTerm])
 
-  const handleDelete = (id: number) => {
-    deleteProject(id)
-    toast({
-      title: "Project deleted",
-      description: "The project has been deleted successfully.",
-    })
+  const handleDelete = async (id) => {
+    try {
+      await deleteProject(id)
+      setProjects(projects.filter((project) => project._id !== id))
+      toast({
+        title: "Project deleted",
+        description: "The project has been deleted successfully.",
+      })
+    } catch (error) {
+      console.error("Error deleting project:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete project. Please try again.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Projects</h1>
+        </div>
+        <div className="text-center py-8">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -105,7 +145,7 @@ export default function ProjectsPage() {
               </TableRow>
             ) : (
               filteredProjects.map((project) => (
-                <TableRow key={project.id}>
+                <TableRow key={project._id}>
                   <TableCell className="font-medium">{project.title}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{project.category}</Badge>
@@ -141,12 +181,12 @@ export default function ProjectsPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`/projects/${project.id}`} target="_blank">
+                          <Link href={`/projects/${project._id}`} target="_blank">
                             <Eye className="mr-2 h-4 w-4" /> View
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href={`/admin/projects/edit/${project.id}`}>
+                          <Link href={`/admin/projects/edit/${project._id}`}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                           </Link>
                         </DropdownMenuItem>
@@ -166,7 +206,7 @@ export default function ProjectsPage() {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDelete(project.id)}
+                                onClick={() => handleDelete(project._id)}
                                 className="bg-destructive text-destructive-foreground"
                               >
                                 Delete

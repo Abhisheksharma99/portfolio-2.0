@@ -1,108 +1,56 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { getBlogs } from "@/lib/actions/blog-actions"
 import Link from "next/link"
 import Image from "next/image"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, Clock, Calendar } from "lucide-react"
-import { useBlogStore } from "@/lib/stores/blog-store"
 
-export default function BlogPage() {
-  const { blogs, initializeBlogs } = useBlogStore()
-  const [isLoading, setIsLoading] = useState(true)
+export const metadata = {
+  title: "Blog | Abhishek Sharma",
+  description: "Read the latest articles on web development, design, and technology.",
+}
 
-  useEffect(() => {
-    // Initialize blogs from localStorage
-    const init = async () => {
-      initializeBlogs()
-      setIsLoading(false)
-    }
-    init()
-  }, [initializeBlogs])
-
-  if (isLoading) {
-    return (
-      <div className="py-20 bg-background">
-        <div className="container px-4 mx-auto">
-          <div className="flex justify-center items-center min-h-[50vh]">
-            <p>Loading blog posts...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+export default async function BlogPage() {
+  const blogs = await getBlogs()
 
   return (
-    <main className="py-20 bg-background">
-      <div className="container px-4 mx-auto">
-        <div className="flex items-center mb-8">
-          <Button asChild variant="ghost" className="mr-4">
-            <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </Button>
-        </div>
+    <main className="container mx-auto px-4 py-12">
+      <h1 className="text-4xl font-bold mb-8 text-center">Blog</h1>
 
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">Blog Articles</h1>
-          <p className="text-lg text-muted-foreground">
-            Thoughts, insights, and tutorials on web development, design, and technology.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogs.length === 0 ? (
-            <div className="col-span-3 text-center py-12">
-              <p className="text-muted-foreground">No blog posts found.</p>
-            </div>
-          ) : (
-            blogs.map((post) => (
-              <Card
-                key={post.id}
-                className="overflow-hidden group hover:shadow-lg transition-shadow duration-300 glass-card border-0"
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={post.image || "/placeholder.svg"}
-                    alt={post.title}
-                    width={600}
-                    height={400}
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-600">
-                    {post.category}
-                  </Badge>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {blogs.map((blog) => (
+          <Link key={blog._id} href={`/blog/${blog.slug}`} className="group">
+            <div className="rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl bg-card">
+              <div className="relative h-48 w-full">
+                <Image
+                  src={blog.coverImage || "/placeholder.svg?height=600&width=800"}
+                  alt={blog.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-6">
+                <div className="flex items-center mb-2">
+                  <span className="text-sm text-muted-foreground">
+                    {new Date(blog.publishedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
+                  <span className="mx-2">•</span>
+                  <span className="text-sm text-muted-foreground">{blog.category}</span>
                 </div>
-
-                <CardHeader>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    <span>{post.date}</span>
-                    <span className="mx-2">•</span>
-                    <Clock className="mr-1 h-4 w-4" />
-                    <span>{post.readTime}</span>
-                  </div>
-                  <CardTitle className="line-clamp-2">{post.title}</CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                  <CardDescription className="text-base line-clamp-3">{post.excerpt}</CardDescription>
-                </CardContent>
-
-                <CardFooter>
-                  <Button asChild variant="ghost" className="p-0 hover:bg-transparent">
-                    <Link href={`/blog/${post.slug}`} className="text-primary flex items-center">
-                      Read More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))
-          )}
-        </div>
+                <h2 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{blog.title}</h2>
+                <p className="text-muted-foreground line-clamp-3">{blog.excerpt}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {blog.tags.slice(0, 3).map((tag) => (
+                    <span key={tag} className="px-2 py-1 text-xs rounded-full bg-secondary text-secondary-foreground">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </main>
   )
