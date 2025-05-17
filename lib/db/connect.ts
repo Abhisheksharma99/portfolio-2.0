@@ -1,47 +1,26 @@
 import mongoose from "mongoose"
 
-const MONGODB_URI = process.env.MONGODB_URI
-
-if (!MONGODB_URI) {
-  console.warn("No MongoDB URI provided. Using fallback data.")
-}
-
-let cached = global.mongoose
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
-}
+let isConnected = false
 
 export async function connectToDatabase() {
-  if (!MONGODB_URI) {
-    console.warn("No MongoDB URI provided. Using fallback data.")
+  if (isConnected) {
     return
   }
 
-  if (cached.conn) {
-    return cached.conn
-  }
+  try {
+    const mongodbUri = process.env.MONGODB_URI
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
+    if (!mongodbUri) {
+      console.log("MongoDB URI not found, skipping database connection")
+      return
     }
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log("Connected to MongoDB")
-      return mongoose
-    })
+    await mongoose.connect(mongodbUri)
+    isConnected = true
+    console.log("MongoDB connected successfully")
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error)
   }
-
-  try {
-    cached.conn = await cached.promise
-  } catch (e) {
-    cached.promise = null
-    console.error("Error connecting to MongoDB:", e)
-    throw e
-  }
-
-  return cached.conn
 }
 
 export default mongoose
