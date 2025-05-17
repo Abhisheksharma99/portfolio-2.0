@@ -5,43 +5,47 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 262.1 83.3% 57.8%;
   }
 }
 
@@ -54,7 +58,7 @@
   }
 }
 
-/* Galaxy Background */
+/* Galaxy background for hero section */
 .galaxy-background {
   background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
   position: relative;
@@ -68,99 +72,29 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(white, rgba(255, 255, 255, 0.2) 2px, transparent 40px),
-    radial-gradient(white, rgba(255, 255, 255, 0.15) 1px, transparent 30px),
-    radial-gradient(white, rgba(255, 255, 255, 0.1) 2px, transparent 40px);
-  background-size: 550px 550px, 350px 350px, 250px 250px;
-  background-position: 0 0, 40px 60px, 130px 270px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='1'%3E%3Ccircle cx='400' cy='400' r='1'/%3E%3Ccircle cx='500' cy='300' r='1'/%3E%3Ccircle cx='300' cy='500' r='1'/%3E%3Ccircle cx='200' cy='200' r='1'/%3E%3Ccircle cx='600' cy='600' r='1'/%3E%3Ccircle cx='700' cy='300' r='1'/%3E%3Ccircle cx='300' cy='700' r='1'/%3E%3Ccircle cx='100' cy='500' r='1'/%3E%3Ccircle cx='500' cy='100' r='1'/%3E%3Ccircle cx='150' cy='350' r='1'/%3E%3Ccircle cx='350' cy='150' r='1'/%3E%3Ccircle cx='650' cy='350' r='1'/%3E%3Ccircle cx='350' cy='650' r='1'/%3E%3Ccircle cx='150' cy='650' r='1'/%3E%3Ccircle cx='650' cy='150' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
   z-index: 1;
 }
 
-/* Glass Card */
+/* Glass card effect */
 .glass-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .dark .glass-card {
-  background: rgba(17, 25, 40, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.125);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Animated Skill Bar */
-.animated-skill-bar {
-  height: 8px;
-  background: linear-gradient(90deg, rgba(147, 51, 234, 0.5) 0%, rgba(236, 72, 153, 0.5) 100%);
-  border-radius: 4px;
-  position: relative;
-  overflow: hidden;
-  width: var(--skill-level, 0%);
-  transition: width 1.5s ease-in-out;
-}
-
-.animated-skill-bar::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, rgba(147, 51, 234, 1) 0%, rgba(236, 72, 153, 1) 100%);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.6;
-  }
-}
-
-/* Timeline Item */
-.timeline-item {
-  position: relative;
-  padding-left: 28px;
-}
-
-.timeline-item::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: linear-gradient(90deg, rgba(147, 51, 234, 1) 0%, rgba(236, 72, 153, 1) 100%);
-}
-
-.timeline-item::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 24px;
-  bottom: -24px;
-  width: 2px;
-  background: linear-gradient(180deg, rgba(147, 51, 234, 0.5) 0%, rgba(236, 72, 153, 0.1) 100%);
-}
-
-.timeline-item:last-child::after {
-  display: none;
-}
-
-/* Section Divider */
+/* Section divider */
 .section-divider {
   height: 100px;
   width: 100%;
   overflow: hidden;
   line-height: 0;
-  transform: rotate(180deg);
 }
 
 .section-divider svg {
@@ -168,6 +102,59 @@
   display: block;
   width: calc(100% + 1.3px);
   height: 100px;
+}
+
+/* Timeline item styling */
+.timeline-item {
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 2px solid hsl(var(--primary));
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -0.5rem;
+  top: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background-color: hsl(var(--primary));
+}
+
+/* Animated skill bars */
+.animated-skill-bar {
+  height: 0.5rem;
+  background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.5));
+  border-radius: 0.25rem;
+  width: var(--skill-level);
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-skill-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Fix for dark mode text visibility */
@@ -179,33 +166,42 @@
   color: hsl(var(--muted-foreground));
 }
 
-.dark .bg-background {
-  background-color: hsl(var(--background));
-}
-
-.dark .bg-card {
-  background-color: hsl(var(--card));
-}
-
 .dark .text-card-foreground {
   color: hsl(var(--card-foreground));
 }
 
-/* Ensure proper contrast in both light and dark modes */
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-  color: hsl(var(--foreground));
+.dark .text-primary {
+  color: hsl(var(--primary));
 }
 
-.dark p {
-  color: hsl(var(--foreground));
+.dark .text-secondary {
+  color: hsl(var(--secondary));
 }
 
-.dark .card {
-  background-color: hsl(var(--card));
-  color: hsl(var(--card-foreground));
+.dark .text-accent {
+  color: hsl(var(--accent));
+}
+
+.dark .text-destructive {
+  color: hsl(var(--destructive));
+}
+
+.dark .text-popover-foreground {
+  color: hsl(var(--popover-foreground));
+}
+
+.dark .text-accent-foreground {
+  color: hsl(var(--accent-foreground));
+}
+
+.dark .text-destructive-foreground {
+  color: hsl(var(--destructive-foreground));
+}
+
+.dark .text-primary-foreground {
+  color: hsl(var(--primary-foreground));
+}
+
+.dark .text-secondary-foreground {
+  color: hsl(var(--secondary-foreground));
 }
