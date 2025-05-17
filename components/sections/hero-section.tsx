@@ -6,7 +6,7 @@ import { ArrowDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-export default function HeroSection() {
+export function HeroSection() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-4xl md:text-6xl font-bold mb-4 text-white"
+          className="text-4xl md:text-6xl font-bold mb-4 text-white dark:text-white"
         >
           Abhishek Sharma
         </motion.h1>
@@ -53,7 +53,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl md:text-2xl mb-8 text-white/80"
+          className="text-xl md:text-2xl mb-8 text-white/80 dark:text-white/80"
         >
           Full-Stack Developer & UI/UX Designer
         </motion.h2>

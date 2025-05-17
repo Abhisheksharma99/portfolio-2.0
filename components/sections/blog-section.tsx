@@ -9,7 +9,7 @@ import { CardIllumination } from "@/components/card-illumination"
 import { fallbackBlogs } from "@/lib/fallback-data"
 import Link from "next/link"
 
-export default function BlogSection() {
+export function BlogSection() {
   const [mounted, setMounted] = useState(false)
   const [blogs, setBlogs] = useState(fallbackBlogs)
 
@@ -45,7 +45,7 @@ export default function BlogSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Latest Articles</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Latest Articles</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Insights, tutorials, and thoughts on web development, design, and technology.
           </p>
@@ -54,7 +54,7 @@ export default function BlogSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogs.slice(0, 3).map((blog, index) => (
             <motion.div
-              key={blog.id}
+              key={blog.id || blog._id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -71,15 +71,16 @@ export default function BlogSection() {
                   </div>
                   <CardContent className="p-6">
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {blog.tags.slice(0, 2).map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
+                      {blog.tags &&
+                        blog.tags.slice(0, 2).map((tag) => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
                     </div>
 
                     <Link href={`/blog/${blog.slug}`} className="hover:underline">
-                      <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
+                      <h3 className="text-xl font-bold mb-2 text-foreground">{blog.title}</h3>
                     </Link>
 
                     <p className="text-muted-foreground mb-4 line-clamp-3">{blog.excerpt}</p>
@@ -87,11 +88,13 @@ export default function BlogSection() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <img
-                          src={blog.author.image || "/placeholder.svg"}
-                          alt={blog.author.name}
+                          src={(blog.author && blog.author.image) || "/placeholder.svg"}
+                          alt={(blog.author && blog.author.name) || "Author"}
                           className="h-8 w-8 rounded-full mr-2"
                         />
-                        <span className="text-sm">{blog.author.name}</span>
+                        <span className="text-sm text-foreground">
+                          {(blog.author && blog.author.name) || blog.author || "Author"}
+                        </span>
                       </div>
                       <span className="text-sm text-muted-foreground">
                         {new Date(blog.publishedAt).toLocaleDateString()}

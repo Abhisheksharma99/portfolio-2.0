@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { fallbackWorkExperience, fallbackEducation } from "@/lib/fallback-data"
 
-export default function AboutSection() {
+export function AboutSection() {
   const [mounted, setMounted] = useState(false)
   const [workExperience, setWorkExperience] = useState(fallbackWorkExperience)
   const [education, setEducation] = useState(fallbackEducation)
@@ -51,7 +51,7 @@ export default function AboutSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">About Me</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">About Me</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             I'm a passionate full-stack developer with expertise in building modern web applications. With a strong
             foundation in both frontend and backend technologies, I create seamless user experiences.
@@ -67,37 +67,37 @@ export default function AboutSection() {
           >
             <Card className="h-full">
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6">Skills</h3>
+                <h3 className="text-2xl font-bold mb-6 text-foreground">Skills</h3>
 
                 <div className="space-y-6">
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="font-medium">Frontend Development</span>
-                      <span>90%</span>
+                      <span className="font-medium text-foreground">Frontend Development</span>
+                      <span className="text-foreground">90%</span>
                     </div>
                     <div className="animated-skill-bar" style={{ "--skill-level": "90%" } as React.CSSProperties}></div>
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="font-medium">Backend Development</span>
-                      <span>85%</span>
+                      <span className="font-medium text-foreground">Backend Development</span>
+                      <span className="text-foreground">85%</span>
                     </div>
                     <div className="animated-skill-bar" style={{ "--skill-level": "85%" } as React.CSSProperties}></div>
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="font-medium">UI/UX Design</span>
-                      <span>80%</span>
+                      <span className="font-medium text-foreground">UI/UX Design</span>
+                      <span className="text-foreground">80%</span>
                     </div>
                     <div className="animated-skill-bar" style={{ "--skill-level": "80%" } as React.CSSProperties}></div>
                   </div>
 
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="font-medium">DevOps</span>
-                      <span>75%</span>
+                      <span className="font-medium text-foreground">DevOps</span>
+                      <span className="text-foreground">75%</span>
                     </div>
                     <div className="animated-skill-bar" style={{ "--skill-level": "75%" } as React.CSSProperties}></div>
                   </div>
@@ -114,7 +114,7 @@ export default function AboutSection() {
           >
             <Card className="h-full">
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6">Technologies</h3>
+                <h3 className="text-2xl font-bold mb-6 text-foreground">Technologies</h3>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {[
@@ -131,7 +131,10 @@ export default function AboutSection() {
                     "AWS",
                     "Git",
                   ].map((tech, index) => (
-                    <div key={tech} className="bg-secondary rounded-md p-3 text-center text-sm font-medium">
+                    <div
+                      key={tech}
+                      className="bg-secondary rounded-md p-3 text-center text-sm font-medium text-secondary-foreground"
+                    >
                       {tech}
                     </div>
                   ))}
@@ -148,18 +151,18 @@ export default function AboutSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h3 className="text-2xl font-bold mb-6">Work Experience</h3>
+            <h3 className="text-2xl font-bold mb-6 text-foreground">Work Experience</h3>
 
             <div className="space-y-8">
               {workExperience.map((job) => (
                 <div key={job.id} className="timeline-item">
-                  <h4 className="text-xl font-semibold">{job.title}</h4>
+                  <h4 className="text-xl font-semibold text-foreground">{job.title}</h4>
                   <p className="text-primary font-medium">{job.company}</p>
                   <p className="text-sm text-muted-foreground mb-2">
                     {job.location} | {new Date(job.startDate).getFullYear()} -{" "}
                     {job.current ? "Present" : new Date(job.endDate as string).getFullYear()}
                   </p>
-                  <p>{job.description}</p>
+                  <p className="text-foreground">{job.description}</p>
                 </div>
               ))}
             </div>
@@ -171,18 +174,18 @@ export default function AboutSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h3 className="text-2xl font-bold mb-6">Education</h3>
+            <h3 className="text-2xl font-bold mb-6 text-foreground">Education</h3>
 
             <div className="space-y-8">
               {education.map((edu) => (
                 <div key={edu.id} className="timeline-item">
-                  <h4 className="text-xl font-semibold">{edu.title}</h4>
+                  <h4 className="text-xl font-semibold text-foreground">{edu.title}</h4>
                   <p className="text-primary font-medium">{edu.company}</p>
                   <p className="text-sm text-muted-foreground mb-2">
                     {edu.location} | {new Date(edu.startDate).getFullYear()} -{" "}
                     {new Date(edu.endDate as string).getFullYear()}
                   </p>
-                  <p>{edu.description}</p>
+                  <p className="text-foreground">{edu.description}</p>
                 </div>
               ))}
             </div>

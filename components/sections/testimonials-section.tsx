@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { fallbackTestimonials } from "@/lib/fallback-data"
 
-export default function TestimonialsSection() {
+export function TestimonialsSection() {
   const [mounted, setMounted] = useState(false)
   const [testimonials, setTestimonials] = useState(fallbackTestimonials)
 
@@ -42,7 +42,7 @@ export default function TestimonialsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Client Testimonials</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Client Testimonials</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             What clients say about working with me. I strive to deliver exceptional results and experiences.
           </p>
@@ -51,7 +51,7 @@ export default function TestimonialsSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <motion.div
-              key={testimonial.id}
+              key={testimonial.id || testimonial._id || index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -71,7 +71,7 @@ export default function TestimonialsSection() {
                     ))}
                   </div>
 
-                  <p className="mb-6 italic">"{testimonial.content}"</p>
+                  <p className="mb-6 italic text-foreground">"{testimonial.content}"</p>
 
                   <div className="flex items-center">
                     <img
@@ -80,8 +80,8 @@ export default function TestimonialsSection() {
                       className="h-12 w-12 rounded-full mr-4"
                     />
                     <div>
-                      <h4 className="font-semibold">{testimonial.name}</h4>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
+                      <p className="text-sm text-muted-foreground">{testimonial.role || testimonial.position}</p>
                     </div>
                   </div>
                 </CardContent>

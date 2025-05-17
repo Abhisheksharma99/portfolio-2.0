@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Mail, Phone, MapPin, Send, Linkedin, Github } from "lucide-react"
 import { CardIllumination } from "@/components/card-illumination"
 
-export default function ContactSection() {
+export function ContactSection() {
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
@@ -52,7 +52,7 @@ export default function ContactSection() {
     <section id="contact" className="py-20 bg-background">
       <div className="container px-4 mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Get In Touch</h2>
+          <h2 className="text-3xl font-bold mb-4 text-foreground">Get In Touch</h2>
           <p className="text-lg text-muted-foreground">
             Have a project in mind or want to discuss a potential collaboration? I'd love to hear from you.
           </p>
@@ -69,7 +69,7 @@ export default function ContactSection() {
                         <Mail className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Email</h3>
+                        <h3 className="font-medium text-foreground">Email</h3>
                         <p className="text-sm text-muted-foreground">abhisheksharma999r@gmail.com</p>
                       </div>
                     </div>
@@ -85,7 +85,7 @@ export default function ContactSection() {
                         <Phone className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Phone</h3>
+                        <h3 className="font-medium text-foreground">Phone</h3>
                         <p className="text-sm text-muted-foreground">+91 7015445629</p>
                       </div>
                     </div>
@@ -101,7 +101,7 @@ export default function ContactSection() {
                         <MapPin className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-medium">Location</h3>
+                        <h3 className="font-medium text-foreground">Location</h3>
                         <p className="text-sm text-muted-foreground">Delhi, India</p>
                       </div>
                     </div>
@@ -112,7 +112,7 @@ export default function ContactSection() {
               <CardIllumination>
                 <Card className="glass-card border-0">
                   <CardContent className="p-6">
-                    <h3 className="font-medium mb-4">Connect With Me</h3>
+                    <h3 className="font-medium mb-4 text-foreground">Connect With Me</h3>
                     <div className="flex gap-4">
                       <Button
                         variant="outline"
@@ -155,7 +155,7 @@ export default function ContactSection() {
             <CardIllumination>
               <Card className="glass-card border-0">
                 <CardHeader>
-                  <CardTitle>Send Me a Message</CardTitle>
+                  <CardTitle className="text-foreground">Send Me a Message</CardTitle>
                   <CardDescription>
                     Fill out the form below and I'll get back to you as soon as possible.
                   </CardDescription>
@@ -165,7 +165,7 @@ export default function ContactSection() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label htmlFor="name" className="text-sm font-medium">
+                        <label htmlFor="name" className="text-sm font-medium text-foreground">
                           Name
                         </label>
                         <Input
@@ -180,7 +180,7 @@ export default function ContactSection() {
                       </div>
 
                       <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">
+                        <label htmlFor="email" className="text-sm font-medium text-foreground">
                           Email
                         </label>
                         <Input
@@ -197,7 +197,7 @@ export default function ContactSection() {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="subject" className="text-sm font-medium">
+                      <label htmlFor="subject" className="text-sm font-medium text-foreground">
                         Subject
                       </label>
                       <Input
@@ -212,7 +212,7 @@ export default function ContactSection() {
                     </div>
 
                     <div className="space-y-2">
-                      <label htmlFor="message" className="text-sm font-medium">
+                      <label htmlFor="message" className="text-sm font-medium text-foreground">
                         Message
                       </label>
                       <Textarea
