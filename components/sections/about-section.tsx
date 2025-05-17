@@ -1,195 +1,178 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { fallbackWorkExperience, fallbackEducation } from "@/lib/fallback-data"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Download, Briefcase, GraduationCap } from "lucide-react"
+import { CardIllumination } from "@/components/card-illumination"
+import { useExperienceStore } from "@/lib/stores/experience-store"
 
 export function AboutSection() {
-  const [mounted, setMounted] = useState(false)
-  const [workExperience, setWorkExperience] = useState(fallbackWorkExperience)
-  const [education, setEducation] = useState(fallbackEducation)
+  const [activeTab, setActiveTab] = useState("skills")
+  const { workExperience, education, initializeExperience } = useExperienceStore()
 
   useEffect(() => {
-    setMounted(true)
+    // Initialize experience from localStorage if available
+    initializeExperience()
+  }, [initializeExperience])
 
-    // Try to fetch from API, fallback to static data
-    const fetchExperience = async () => {
-      try {
-        const workRes = await fetch("/api/experience?type=work")
-        const eduRes = await fetch("/api/experience?type=education")
+  // Skills with animation on scroll
+  const skills = [
+    { name: "JavaScript/TypeScript", level: 95 },
+    { name: "React & Next.js", level: 90 },
+    { name: "Node.js", level: 85 },
+    { name: "Angular", level: 80 },
+    { name: "MongoDB", level: 75 },
+    { name: "SQL", level: 70 },
+    { name: "Docker/Kubernetes", level: 65 },
+  ]
 
-        if (workRes.ok) {
-          const workData = await workRes.json()
-          setWorkExperience(workData.length > 0 ? workData : fallbackWorkExperience)
-        }
+  // Animate skill bars on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const skillBars = entry.target.querySelectorAll(".animated-skill-bar")
+            skillBars.forEach((bar, index) => {
+              setTimeout(() => {
+                const level = bar.getAttribute("data-level")
+                bar.style.setProperty("--skill-level", `${level}%`)
+              }, index * 100)
+            })
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-        if (eduRes.ok) {
-          const eduData = await eduRes.json()
-          setEducation(eduData.length > 0 ? eduData : fallbackEducation)
-        }
-      } catch (error) {
-        console.error("Error fetching experience data:", error)
-        // Keep fallback data
-      }
+    const skillsSection = document.querySelector(".skills-section")
+    if (skillsSection) {
+      observer.observe(skillsSection)
     }
 
-    fetchExperience()
-  }, [])
-
-  if (!mounted) return null
+    return () => {
+      if (skillsSection) {
+        observer.unobserve(skillsSection)
+      }
+    }
+  }, [activeTab])
 
   return (
     <section id="about" className="py-20 bg-background">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">About Me</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            I'm a passionate full-stack developer with expertise in building modern web applications. With a strong
-            foundation in both frontend and backend technologies, I create seamless user experiences.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <Card className="h-full">
-              <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6 text-foreground">Skills</h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium text-foreground">Frontend Development</span>
-                      <span className="text-foreground">90%</span>
-                    </div>
-                    <div className="animated-skill-bar" style={{ "--skill-level": "90%" } as React.CSSProperties}></div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium text-foreground">Backend Development</span>
-                      <span className="text-foreground">85%</span>
-                    </div>
-                    <div className="animated-skill-bar" style={{ "--skill-level": "85%" } as React.CSSProperties}></div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium text-foreground">UI/UX Design</span>
-                      <span className="text-foreground">80%</span>
-                    </div>
-                    <div className="animated-skill-bar" style={{ "--skill-level": "80%" } as React.CSSProperties}></div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium text-foreground">DevOps</span>
-                      <span className="text-foreground">75%</span>
-                    </div>
-                    <div className="animated-skill-bar" style={{ "--skill-level": "75%" } as React.CSSProperties}></div>
-                  </div>
+      <div className="container px-4 mx-auto">
+        <div className="flex flex-col md:flex-row gap-12 items-center">
+          <div className="w-full md:w-2/5 lg:w-1/3">
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-xl bg-gradient-to-r from-purple-400/30 to-pink-600/30 blur-xl opacity-70 dark:opacity-30"></div>
+              <div className="gradient-border">
+                <div className="relative aspect-square overflow-hidden rounded-xl">
+                  <Image
+                    src="/placeholder.svg?height=600&width=600"
+                    alt="Abhishek Sharma"
+                    width={600}
+                    height={600}
+                    className="object-cover"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <Card className="h-full">
-              <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6 text-foreground">Technologies</h3>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {[
-                    "React",
-                    "Next.js",
-                    "TypeScript",
-                    "Node.js",
-                    "Express",
-                    "MongoDB",
-                    "PostgreSQL",
-                    "Tailwind CSS",
-                    "GraphQL",
-                    "Docker",
-                    "AWS",
-                    "Git",
-                  ].map((tech, index) => (
-                    <div
-                      key={tech}
-                      className="bg-secondary rounded-md p-3 text-center text-sm font-medium text-secondary-foreground"
-                    >
-                      {tech}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h3 className="text-2xl font-bold mb-6 text-foreground">Work Experience</h3>
-
-            <div className="space-y-8">
-              {workExperience.map((job) => (
-                <div key={job.id} className="timeline-item">
-                  <h4 className="text-xl font-semibold text-foreground">{job.title}</h4>
-                  <p className="text-primary font-medium">{job.company}</p>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {job.location} | {new Date(job.startDate).getFullYear()} -{" "}
-                    {job.current ? "Present" : new Date(job.endDate as string).getFullYear()}
-                  </p>
-                  <p className="text-foreground">{job.description}</p>
-                </div>
-              ))}
+              </div>
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <h3 className="text-2xl font-bold mb-6 text-foreground">Education</h3>
-
-            <div className="space-y-8">
-              {education.map((edu) => (
-                <div key={edu.id} className="timeline-item">
-                  <h4 className="text-xl font-semibold text-foreground">{edu.title}</h4>
-                  <p className="text-primary font-medium">{edu.company}</p>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {edu.location} | {new Date(edu.startDate).getFullYear()} -{" "}
-                    {new Date(edu.endDate as string).getFullYear()}
-                  </p>
-                  <p className="text-foreground">{edu.description}</p>
-                </div>
-              ))}
+            <div className="mt-8 text-center">
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-purple-400 dark:border-purple-700 hover:bg-purple-500/10"
+              >
+                <a href="/resume.pdf" target="_blank" rel="noreferrer">
+                  Download Resume <Download className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
             </div>
-          </motion.div>
+          </div>
+
+          <div className="w-full md:w-3/5 lg:w-2/3">
+            <h2 className="text-3xl font-bold mb-6">About Me</h2>
+
+            <p className="text-lg text-muted-foreground mb-6">
+              I'm a dynamic Software Developer with expertise in crafting elegant, scalable code and delivering exciting
+              user experiences. Equipped with a comprehensive skill set in full-stack development, project management,
+              and problem-solving.
+            </p>
+
+            <p className="text-lg text-muted-foreground mb-8">
+              My approach combines technical expertise with creative problem-solving to deliver solutions that not only
+              meet but exceed client expectations. I'm dedicated to writing clean, maintainable code and creating
+              intuitive, accessible user interfaces.
+            </p>
+
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="skills">Skills</TabsTrigger>
+                <TabsTrigger value="experience">Experience</TabsTrigger>
+                <TabsTrigger value="education">Education</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="skills" className="mt-6 skills-section">
+                <CardIllumination className="p-6 rounded-lg glass-card border-0">
+                  <div className="space-y-4">
+                    {skills.map((skill, index) => (
+                      <div key={index} className="space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium">{skill.name}</span>
+                          <span className="text-sm text-muted-foreground">{skill.level}%</span>
+                        </div>
+                        <div className="animated-skill-bar" data-level={skill.level}></div>
+                      </div>
+                    ))}
+                  </div>
+                </CardIllumination>
+              </TabsContent>
+
+              <TabsContent value="experience" className="mt-6">
+                <CardIllumination className="p-6 rounded-lg glass-card border-0">
+                  <div className="space-y-6">
+                    {workExperience.map((item, index) => (
+                      <div key={index} className="timeline-item">
+                        <div className="flex flex-col">
+                          <h3 className="text-lg font-semibold">{item.title}</h3>
+                          <div className="flex items-center text-sm text-muted-foreground mb-2">
+                            <Briefcase className="mr-2 h-4 w-4" />
+                            <span>{item.company}</span>
+                            <span className="mx-2">•</span>
+                            <span>{item.period}</span>
+                          </div>
+                          <p className="text-muted-foreground">{item.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardIllumination>
+              </TabsContent>
+
+              <TabsContent value="education" className="mt-6">
+                <CardIllumination className="p-6 rounded-lg glass-card border-0">
+                  <div className="space-y-6">
+                    {education.map((item, index) => (
+                      <div key={index} className="timeline-item">
+                        <div className="flex flex-col">
+                          <h3 className="text-lg font-semibold">{item.degree}</h3>
+                          <div className="flex items-center text-sm text-muted-foreground mb-2">
+                            <GraduationCap className="mr-2 h-4 w-4" />
+                            <span>{item.institution}</span>
+                            <span className="mx-2">•</span>
+                            <span>{item.period}</span>
+                          </div>
+                          <p className="text-muted-foreground">{item.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardIllumination>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
     </section>
