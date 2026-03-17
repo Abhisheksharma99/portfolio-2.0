@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Plus, MoreHorizontal, Pencil, Trash2, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { getAllBlogs, deleteBlog } from "@/lib/actions/blog-actions"
+import { useBlogStore } from "@/lib/stores/blog-store"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,36 +21,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useRouter } from "next/navigation"
 
 export default function BlogsPage() {
-  const router = useRouter()
   const { toast } = useToast()
-  const [blogs, setBlogs] = useState([])
+  const { blogs, deleteBlog, initializeBlogs } = useBlogStore()
   const [searchTerm, setSearchTerm] = useState("")
-  const [filteredBlogs, setFilteredBlogs] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [filteredBlogs, setFilteredBlogs] = useState(blogs)
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const data = await getAllBlogs()
-        setBlogs(data)
-        setFilteredBlogs(data)
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Error fetching blogs:", error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch blogs. Please try again.",
-          variant: "destructive",
-        })
-        setIsLoading(false)
-      }
-    }
-
-    fetchBlogs()
-  }, [toast])
+    // Initialize blogs from localStorage if available
+    initializeBlogs()
+  }, [initializeBlogs])
 
   useEffect(() => {
     // Filter blogs based on search term
@@ -68,33 +49,12 @@ export default function BlogsPage() {
     }
   }, [blogs, searchTerm])
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteBlog(id)
-      setBlogs(blogs.filter((blog) => blog._id !== id))
-      toast({
-        title: "Blog post deleted",
-        description: "The blog post has been deleted successfully.",
-      })
-    } catch (error) {
-      console.error("Error deleting blog:", error)
-      toast({
-        title: "Error",
-        description: "Failed to delete blog post. Please try again.",
-        variant: "destructive",
-      })
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Blog Posts</h1>
-        </div>
-        <div className="text-center py-8">Loading...</div>
-      </div>
-    )
+  const handleDelete = (id: number) => {
+    deleteBlog(id)
+    toast({
+      title: "Blog post deleted",
+      description: "The blog post has been deleted successfully.",
+    })
   }
 
   return (
@@ -144,16 +104,14 @@ export default function BlogsPage() {
               </TableRow>
             ) : (
               filteredBlogs.map((blog) => (
-                <TableRow key={blog._id}>
+                <TableRow key={blog.id}>
                   <TableCell className="font-medium">{blog.title}</TableCell>
                   <TableCell>
                     <Badge variant="outline">{blog.category}</Badge>
                   </TableCell>
                   <TableCell>{blog.date}</TableCell>
                   <TableCell>
-                    <Badge className={blog.isPublished ? "bg-green-500" : "bg-amber-500"}>
-                      {blog.isPublished ? "Published" : "Draft"}
-                    </Badge>
+                    <Badge className="bg-green-500">Published</Badge>
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -170,7 +128,7 @@ export default function BlogsPage() {
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link href={`/admin/blogs/edit/${blog._id}`}>
+                          <Link href={`/admin/blogs/edit/${blog.id}`}>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                           </Link>
                         </DropdownMenuItem>
@@ -190,7 +148,7 @@ export default function BlogsPage() {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={() => handleDelete(blog._id)}
+                                onClick={() => handleDelete(blog.id)}
                                 className="bg-destructive text-destructive-foreground"
                               >
                                 Delete
