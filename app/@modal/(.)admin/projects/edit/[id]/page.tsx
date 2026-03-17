@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -10,10 +10,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { getProjectById, updateProject } from "@/lib/actions/project-actions"
 import { X } from "lucide-react"
 
-export default function EditProjectModal({ params }) {
+export default function EditProjectModal({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
@@ -32,7 +34,7 @@ export default function EditProjectModal({ params }) {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const project = await getProjectById(params.id)
+        const project = await getProjectById(id)
         if (project) {
           setFormData({
             ...project,
@@ -52,7 +54,7 @@ export default function EditProjectModal({ params }) {
     }
 
     fetchProject()
-  }, [params.id, toast])
+  }, [id, toast])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -73,7 +75,7 @@ export default function EditProjectModal({ params }) {
     setIsSubmitting(true)
 
     try {
-      await updateProject(formData._id, formData)
+      await updateProject(id, formData)
       toast({
         title: "Project updated",
         description: "Your project has been updated successfully.",
@@ -150,16 +152,11 @@ export default function EditProjectModal({ params }) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="/path/to/image.jpg"
-              />
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+              label="Project Image"
+            />
 
             <div className="space-y-2">
               <Label htmlFor="tags">Tags (comma separated)</Label>

@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   MessageSquareQuote,
+  Link2,
 } from "lucide-react"
 import { useState } from "react"
 import { useAdminAuth } from "@/components/admin/admin-auth-provider"
@@ -45,9 +46,19 @@ export function AdminSidebar() {
       icon: <Briefcase className="h-5 w-5" />,
     },
     {
+      name: "Proposals",
+      href: "/admin/proposals",
+      icon: <Link2 className="h-5 w-5" />,
+    },
+    {
       name: "Testimonials",
       href: "/admin/testimonials",
       icon: <MessageSquareQuote className="h-5 w-5" />,
+    },
+    {
+      name: "Resume",
+      href: "/admin/resume",
+      icon: <FileText className="h-5 w-5" />,
     },
     {
       name: "Files",

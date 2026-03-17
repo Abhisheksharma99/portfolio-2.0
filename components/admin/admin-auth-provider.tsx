@@ -37,21 +37,26 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false)
   }, [])
 
-  // Mock login function - in a real app, this would call an API
   const login = async (email: string, password: string) => {
-    // For demo purposes, hardcoded credentials
-    if (email === "admin@example.com" && password === "password") {
-      const user = {
-        id: "1",
-        name: "John Doe",
-        email: "admin@example.com",
-        role: "admin",
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.user) {
+        setUser(data.user)
+        localStorage.setItem("adminUser", JSON.stringify(data.user))
+        return true
       }
-      setUser(user)
-      localStorage.setItem("adminUser", JSON.stringify(user))
-      return true
+
+      return false
+    } catch {
+      return false
     }
-    return false
   }
 
   const logout = () => {

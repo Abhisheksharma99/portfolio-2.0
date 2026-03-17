@@ -51,7 +51,7 @@ export function CardIllumination({ children, className = "" }: CardIlluminationP
         className="absolute w-[300px] h-[300px] rounded-full pointer-events-none z-[1] mix-blend-screen opacity-0 transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"
         style={{
           background:
-            "radial-gradient(circle, rgba(255, 100, 255, 0.4) 0%, rgba(148, 93, 214, 0.2) 40%, rgba(50, 30, 100, 0.05) 70%, transparent 100%)",
+            "radial-gradient(circle, hsl(38 65% 58% / 0.4) 0%, hsl(30 50% 45% / 0.2) 40%, hsl(38 65% 58% / 0.05) 70%, transparent 100%)",
           filter: "blur(10px)",
         }}
       />

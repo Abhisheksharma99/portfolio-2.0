@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,13 +12,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { getBlogBySlug, updateBlog } from "@/lib/actions/blog-actions"
+import { ImageUpload } from "@/components/admin/image-upload"
+import { getBlogById, updateBlog } from "@/lib/actions/blog-actions"
 import Link from "next/link"
 import { BlogEditor } from "@/components/admin/blog-editor"
 import { Badge } from "@/components/ui/badge"
 import { notFound } from "next/navigation"
 
-export default function EditBlogPage({ params }: { params: { id: string } }) {
+export default function EditBlogPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
   const [blog, setBlog] = useState(null)
@@ -51,9 +53,7 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        // In a real implementation, you would fetch the blog by ID
-        // For now, we'll use the slug to fetch it
-        const data = await getBlogBySlug(params.id)
+        const data = await getBlogById(id)
         if (!data) {
           notFound()
         }
@@ -91,7 +91,7 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
     }
 
     fetchBlog()
-  }, [params.id, router, toast])
+  }, [id, router, toast])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -348,16 +348,11 @@ export default function EditBlogPage({ params }: { params: { id: string } }) {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image">Featured Image URL</Label>
-                  <Input
-                    id="image"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="/path/to/image.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData({...formData, image: url})}
+                  label="Featured Image"
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="date">Publication Date</Label>

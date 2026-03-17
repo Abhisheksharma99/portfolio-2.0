@@ -1,142 +1,249 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Code, Layout, Database, Smartphone, Palette, LineChart } from "lucide-react"
-import Link from "next/link"
-import { CardIllumination } from "@/components/card-illumination"
+import { useState, useRef } from "react"
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion"
+import { Code, Layout, Database, Smartphone, Palette, LineChart, ArrowUpRight, Plus, Minus } from "lucide-react"
+import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { ScrollDrawDoodle, AnimatedSparkle } from "@/components/svg-doodles"
+import { FloatingDot, FloatingCross } from "@/components/floating-elements"
+import { SwoopIn } from "@/components/swoop-in"
 
-export function ServicesSection() {
-  const [activeTab, setActiveTab] = useState("all")
+const services = [
+  {
+    id: 1,
+    title: "Web Development",
+    description: "Custom web applications built with modern frameworks and best practices. Responsive, fast, and accessible.",
+    icon: <Code className="h-5 w-5" />,
+    features: ["Responsive web applications", "Progressive Web Apps", "E-commerce solutions", "Content Management Systems"],
+  },
+  {
+    id: 2,
+    title: "UI/UX Design",
+    description: "User-centered design solutions that enhance user experience and drive engagement.",
+    icon: <Layout className="h-5 w-5" />,
+    features: ["User Interface Design", "User Experience Design", "Wireframing & Prototyping", "Design Systems"],
+  },
+  {
+    id: 3,
+    title: "Backend Development",
+    description: "Robust server-side solutions with secure APIs and optimized database architecture.",
+    icon: <Database className="h-5 w-5" />,
+    features: ["API Development", "Database Design", "Authentication Systems", "Server Optimization"],
+  },
+  {
+    id: 4,
+    title: "Mobile Development",
+    description: "Cross-platform mobile applications that work seamlessly on iOS and Android.",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: ["React Native Apps", "Progressive Web Apps", "App Store Deployment", "Mobile UI/UX"],
+  },
+  {
+    id: 5,
+    title: "Branding & Identity",
+    description: "Comprehensive branding solutions to establish a strong and memorable market presence.",
+    icon: <Palette className="h-5 w-5" />,
+    features: ["Logo Design", "Brand Guidelines", "Visual Identity", "Marketing Materials"],
+  },
+  {
+    id: 6,
+    title: "Analytics & SEO",
+    description: "Data-driven strategies to improve visibility, engagement, and conversion.",
+    icon: <LineChart className="h-5 w-5" />,
+    features: ["Search Engine Optimization", "Performance Analytics", "Conversion Optimization", "Traffic Analysis"],
+  },
+]
 
-  const services = [
-    {
-      id: 1,
-      title: "Web Development",
-      description: "Custom web applications built with modern frameworks and best practices.",
-      icon: <Code className="h-10 w-10" />,
-      category: "development",
-      features: [
-        "Responsive web applications",
-        "Progressive Web Apps (PWA)",
-        "E-commerce solutions",
-        "Content Management Systems",
-      ],
-    },
-    {
-      id: 2,
-      title: "UI/UX Design",
-      description: "User-centered design solutions that enhance user experience and engagement.",
-      icon: <Layout className="h-10 w-10" />,
-      category: "design",
-      features: ["User Interface Design", "User Experience Design", "Wireframing & Prototyping", "Design Systems"],
-    },
-    {
-      id: 3,
-      title: "Backend Development",
-      description: "Robust server-side solutions with secure APIs and database integration.",
-      icon: <Database className="h-10 w-10" />,
-      category: "development",
-      features: ["API Development", "Database Design", "Authentication Systems", "Server Optimization"],
-    },
-    {
-      id: 4,
-      title: "Mobile App Development",
-      description: "Cross-platform mobile applications that work seamlessly on iOS and Android.",
-      icon: <Smartphone className="h-10 w-10" />,
-      category: "development",
-      features: ["React Native Apps", "Progressive Web Apps", "App Store Deployment", "Mobile UI/UX Design"],
-    },
-    {
-      id: 5,
-      title: "Branding & Identity",
-      description: "Comprehensive branding solutions to establish a strong market presence.",
-      icon: <Palette className="h-10 w-10" />,
-      category: "design",
-      features: ["Logo Design", "Brand Guidelines", "Visual Identity", "Marketing Materials"],
-    },
-    {
-      id: 6,
-      title: "Analytics & SEO",
-      description: "Data-driven strategies to improve visibility and user engagement.",
-      icon: <LineChart className="h-10 w-10" />,
-      category: "marketing",
-      features: ["Search Engine Optimization", "Performance Analytics", "Conversion Optimization", "Traffic Analysis"],
-    },
-  ]
+function TiltWrapper({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const rotateX = useMotionValue(0)
+  const rotateY = useMotionValue(0)
+  const springX = useSpring(rotateX, { stiffness: 300, damping: 30 })
+  const springY = useSpring(rotateY, { stiffness: 300, damping: 30 })
 
-  const filteredServices = activeTab === "all" ? services : services.filter((service) => service.category === activeTab)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    rotateX.set(-y * 10)
+    rotateY.set(x * 10)
+  }
+
+  const handleMouseLeave = () => {
+    rotateX.set(0)
+    rotateY.set(0)
+  }
 
   return (
-    <section id="services" className="py-20 bg-background">
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: springX,
+        rotateY: springY,
+        transformStyle: "preserve-3d",
+        perspective: 800,
+      }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+export function ServicesSection() {
+  const [expandedId, setExpandedId] = useState<number | null>(null)
+  const sectionRef = useScrollReveal<HTMLElement>()
+
+  return (
+    <section id="services" ref={sectionRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
+      {/* Background accent */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.01] rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Floating decorative elements */}
+      <FloatingDot className="absolute top-24 right-[12%] pointer-events-none hidden md:block" />
+      <FloatingDot className="absolute bottom-40 left-[8%] pointer-events-none hidden md:block" />
+      <FloatingCross className="absolute top-[35%] right-[6%] pointer-events-none hidden md:block" size={18} />
+
       <div className="container px-4 mx-auto">
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4">Services I Offer</h2>
-          <p className="text-lg text-muted-foreground">
-            I provide a range of services to help businesses and individuals establish a strong digital presence.
-          </p>
-        </div>
-
-        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full mb-12">
-          <div className="flex justify-center">
-            <TabsList>
-              <TabsTrigger value="all">All Services</TabsTrigger>
-              <TabsTrigger value="development">Development</TabsTrigger>
-              <TabsTrigger value="design">Design</TabsTrigger>
-              <TabsTrigger value="marketing">Marketing</TabsTrigger>
-            </TabsList>
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30, rotateX: 8 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ perspective: 800 }}
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-20"
+        >
+          <div>
+            <span className="section-label">Services</span>
+            <div className="relative mt-4 inline-block">
+              <h2 className="font-serif text-5xl sm:text-6xl md:text-7xl tracking-tight">
+                What I do<span className="text-primary">.</span>
+              </h2>
+              {/* Squiggly underline doodle beneath heading */}
+              <ScrollDrawDoodle
+                doodle="squigglyUnderline"
+                size={220}
+                strokeWidth={2}
+                className="absolute -bottom-3 left-0 opacity-40"
+              />
+            </div>
           </div>
-        </Tabs>
+          <p className="text-muted-foreground max-w-md text-sm leading-relaxed md:text-right">
+            Delivering comprehensive digital solutions from concept to deployment, with a focus on quality and innovation.
+          </p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredServices.map((service) => (
-            <CardIllumination key={service.id} className="group hover:shadow-lg transition-shadow duration-300">
-              <Card className="h-full glass-card border-0">
-                <CardHeader>
-                  <div className="mb-4 text-primary transition-transform duration-300 group-hover:scale-110">
-                    {service.icon}
+        {/* Accordion-style service list */}
+        <div className="max-w-4xl mx-auto">
+          {services.map((service, index) => (
+            <SwoopIn
+              key={service.id}
+              direction={index % 2 === 0 ? "left" : "right"}
+              delay={index * 0.06}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20, rotateX: 6 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: index * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                style={{ perspective: 800 }}
+              >
+                <button
+                  onClick={() => setExpandedId(expandedId === service.id ? null : service.id)}
+                  className="w-full group"
+                  aria-expanded={expandedId === service.id}
+                >
+                  <div className={`flex items-center gap-6 py-8 border-b transition-all duration-500 ${
+                    expandedId === service.id
+                      ? "border-primary/30 shadow-[0_4px_24px_-4px_hsl(38_65%_50%/0.12)]"
+                      : "border-border/30 hover:border-primary/20 hover:shadow-[0_4px_20px_-4px_hsl(38_65%_50%/0.08)]"
+                  }`}>
+                    {/* Number with AnimatedSparkle when expanded */}
+                    <span className="font-mono text-[11px] tracking-widest text-muted-foreground/50 w-8 flex-shrink-0 relative">
+                      {String(index + 1).padStart(2, "0")}
+                      <AnimatePresence>
+                        {expandedId === service.id && (
+                          <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute -top-2.5 -right-3"
+                          >
+                            <AnimatedSparkle size={14} delay={0.1} />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </span>
+
+                    {/* Icon */}
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center transition-all duration-500 ${
+                      expandedId === service.id
+                        ? "border-primary/30 bg-primary/[0.06] text-primary"
+                        : "border-border/30 text-muted-foreground group-hover:border-primary/20 group-hover:text-primary"
+                    }`}>
+                      {service.icon}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className={`font-serif text-xl md:text-2xl tracking-tight text-left flex-1 transition-colors duration-300 ${
+                      expandedId === service.id
+                        ? "text-primary"
+                        : "group-hover:text-primary"
+                    }`}>
+                      {service.title}
+                    </h3>
+
+                    {/* Toggle icon */}
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                      expandedId === service.id
+                        ? "border-primary/30 bg-primary/[0.06] text-primary rotate-0"
+                        : "border-border/30 text-muted-foreground group-hover:border-primary/20"
+                    }`}>
+                      {expandedId === service.id ? (
+                        <Minus className="h-3.5 w-3.5" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5" />
+                      )}
+                    </div>
                   </div>
-                  <CardTitle>{service.title}</CardTitle>
-                </CardHeader>
+                </button>
 
-                <CardContent>
-                  <CardDescription className="text-base mb-4">{service.description}</CardDescription>
-
-                  <ul className="space-y-2">
-                    {service.features.map((feature, index) => (
-                      <li key={index} className="flex items-start">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="mr-2 h-5 w-5 text-primary shrink-0"
-                        >
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <span className="text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button asChild variant="ghost" className="mt-6 p-0 hover:bg-transparent">
-                    <Link
-                      href={`/services#${service.title.toLowerCase().replace(/\s+/g, "-")}`}
-                      className="text-primary flex items-center"
+                <AnimatePresence>
+                  {expandedId === service.id && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
                     >
-                      Learn More <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </CardIllumination>
+                      <TiltWrapper>
+                        <div className="py-8 pl-8 md:pl-24 pr-4 border-b border-border/15" style={{ transform: "translateZ(15px)", transformStyle: "preserve-3d" }}>
+                          <p className="text-muted-foreground mb-6 max-w-lg leading-relaxed text-sm">
+                            {service.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {service.features.map((feature, i) => (
+                              <motion.span
+                                key={feature}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3, delay: i * 0.05 }}
+                                className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground/70 px-3 py-1.5 rounded-full border border-border/30 bg-card/50 hover:border-primary/20 hover:text-primary/70 transition-all duration-300"
+                              >
+                                {feature}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </div>
+                      </TiltWrapper>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </SwoopIn>
           ))}
         </div>
       </div>

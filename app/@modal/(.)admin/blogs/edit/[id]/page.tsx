@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -9,10 +9,12 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
-import { getBlogBySlug, updateBlog } from "@/lib/actions/blog-actions"
+import { ImageUpload } from "@/components/admin/image-upload"
+import { getBlogById, updateBlog } from "@/lib/actions/blog-actions"
 import { X } from "lucide-react"
 
-export default function EditBlogModal({ params }) {
+export default function EditBlogModal({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
@@ -36,7 +38,7 @@ export default function EditBlogModal({ params }) {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const blog = await getBlogBySlug(params.id)
+        const blog = await getBlogById(id)
         if (blog) {
           setFormData({
             ...blog,
@@ -57,7 +59,7 @@ export default function EditBlogModal({ params }) {
     }
 
     fetchBlog()
-  }, [params.id, toast])
+  }, [id, toast])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -74,7 +76,7 @@ export default function EditBlogModal({ params }) {
     setIsSubmitting(true)
 
     try {
-      await updateBlog(formData._id, formData)
+      await updateBlog(id, formData)
       toast({
         title: "Blog updated",
         description: "Your blog post has been updated successfully.",
@@ -183,16 +185,11 @@ export default function EditBlogModal({ params }) {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="/path/to/image.jpg"
-                />
-              </div>
+              <ImageUpload
+                value={formData.image}
+                onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+                label="Featured Image"
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="tags">Tags (comma separated)</Label>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { createTestimonial } from "@/lib/actions/testimonial-actions"
 import { X } from "lucide-react"
 
@@ -93,19 +94,11 @@ export default function NewTestimonialModal() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="/path/to/image.jpg"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter the URL of the image to be displayed with this testimonial
-              </p>
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+              label="Profile Image"
+            />
 
             <div className="space-y-2">
               <Label htmlFor="quote">Testimonial Quote</Label>

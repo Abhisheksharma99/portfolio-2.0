@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { createBlog } from "@/lib/actions/blog-actions"
 import Link from "next/link"
 import { BlogEditor } from "@/components/admin/blog-editor"
@@ -323,16 +324,11 @@ export default function NewBlogPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="image">Featured Image URL</Label>
-                  <Input
-                    id="image"
-                    name="image"
-                    value={formData.image}
-                    onChange={handleChange}
-                    placeholder="/path/to/image.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  value={formData.image}
+                  onChange={(url) => setFormData({...formData, image: url})}
+                  label="Featured Image"
+                />
 
                 <div className="space-y-2">
                   <Label htmlFor="date">Publication Date</Label>

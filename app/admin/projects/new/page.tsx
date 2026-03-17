@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { useProjectStore } from "@/lib/stores/project-store"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
@@ -185,19 +186,11 @@ export default function NewProjectPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="/path/to/image.jpg"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Enter the URL of the image to be displayed with this project
-                </p>
-              </div>
+              <ImageUpload
+                value={formData.image}
+                onChange={(url) => setFormData({...formData, image: url})}
+                label="Project Image"
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="demoUrl">Demo URL</Label>

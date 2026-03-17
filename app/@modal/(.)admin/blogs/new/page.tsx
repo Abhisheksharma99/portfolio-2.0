@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { createBlog } from "@/lib/actions/blog-actions"
 import { X } from "lucide-react"
 
@@ -155,16 +156,11 @@ export default function NewBlogModal() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image">Image URL</Label>
-                <Input
-                  id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="/path/to/image.jpg"
-                />
-              </div>
+              <ImageUpload
+                value={formData.image}
+                onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+                label="Featured Image"
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="tags">Tags (comma separated)</Label>

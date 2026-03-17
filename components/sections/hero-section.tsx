@@ -1,287 +1,324 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Download, Github, Linkedin } from "lucide-react"
 import Link from "next/link"
+import { FloatingDot, FloatingRing, FloatingCross, FloatingTriangle } from "@/components/floating-elements"
+import { TextScramble } from "@/components/text-scramble"
+import { AnimatedSparkle, ScrollDrawDoodle } from "@/components/svg-doodles"
+import { MagneticButton } from "@/components/magnetic-button"
+import { ResumeDownloadButton } from "@/components/resume-download-button"
+
+function smoothScrollTo(href: string) {
+  const targetId = href.replace("#", "")
+  const el = document.getElementById(targetId)
+  if (el) {
+    const headerOffset = 80
+    const elementPosition = el.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: elementPosition - headerOffset, behavior: "smooth" })
+  }
+}
+
+function AnimatedLetter({ letter, delay }: { letter: string; delay: number }) {
+  return (
+    <motion.span
+      className="inline-block"
+      initial={{ opacity: 0, y: 50, rotateX: -60, filter: "blur(6px)" }}
+      animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
+      transition={{
+        duration: 0.6,
+        delay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      style={{ perspective: "600px" }}
+    >
+      {letter === " " ? "\u00A0" : letter}
+    </motion.span>
+  )
+}
+
+function AnimatedText({ text, startDelay = 0 }: { text: string; startDelay?: number }) {
+  return (
+    <span className="inline-flex overflow-hidden" style={{ perspective: "600px" }}>
+      {text.split("").map((letter, i) => (
+        <AnimatedLetter key={i} letter={letter} delay={startDelay + i * 0.03} />
+      ))}
+    </span>
+  )
+}
 
 export function HeroSection() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    if (!canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Set canvas dimensions
-    const setCanvasDimensions = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-
-    setCanvasDimensions()
-    window.addEventListener("resize", setCanvasDimensions)
-
-    // Particle class for nebula effect
-    class Particle {
-      x: number
-      y: number
-      size: number
-      speedX: number
-      speedY: number
-      color: string
-      alpha: number
-      vAlpha: number
-
-      constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
-        this.size = Math.random() * 3 + 1
-        this.speedX = Math.random() * 0.5 - 0.25
-        this.speedY = Math.random() * 0.5 - 0.25
-
-        // Create a more sophisticated color palette for nebula effect
-        const colorOptions = [
-          // Purple/pink hues
-          `rgba(${120 + Math.random() * 50}, ${20 + Math.random() * 40}, ${180 + Math.random() * 75}, `,
-          // Blue hues
-          `rgba(${20 + Math.random() * 40}, ${100 + Math.random() * 50}, ${200 + Math.random() * 55}, `,
-          // Teal/cyan accents
-          `rgba(${20 + Math.random() * 40}, ${180 + Math.random() * 75}, ${200 + Math.random() * 55}, `,
-        ]
-
-        this.color = colorOptions[Math.floor(Math.random() * colorOptions.length)]
-        this.alpha = Math.random() * 0.6 + 0.1
-        this.vAlpha = Math.random() * 0.01 - 0.005
-      }
-
-      update() {
-        this.x += this.speedX
-        this.y += this.speedY
-
-        // Pulsating opacity
-        this.alpha += this.vAlpha
-        if (this.alpha <= 0.1 || this.alpha >= 0.7) {
-          this.vAlpha *= -1
-        }
-
-        // Wrap around edges
-        if (this.x > canvas.width) this.x = 0
-        else if (this.x < 0) this.x = canvas.width
-
-        if (this.y > canvas.height) this.y = 0
-        else if (this.y < 0) this.y = canvas.height
-      }
-
-      draw() {
-        if (!ctx) return
-
-        // Draw the particle with glow effect
-        ctx.beginPath()
-        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2)
-        gradient.addColorStop(0, this.color + this.alpha + ")")
-        gradient.addColorStop(1, this.color + "0)")
-        ctx.fillStyle = gradient
-        ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    // Create nebula cloud class
-    class NebulaCloud {
-      x: number
-      y: number
-      radius: number
-      color: string
-      alpha: number
-      vAlpha: number
-
-      constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
-        this.radius = Math.random() * 300 + 200
-
-        // Create a more sophisticated color palette for nebula clouds
-        const colorOptions = [
-          // Purple/pink hues
-          `rgba(${120 + Math.random() * 50}, ${20 + Math.random() * 40}, ${180 + Math.random() * 75}, `,
-          // Blue hues
-          `rgba(${20 + Math.random() * 40}, ${100 + Math.random() * 50}, ${200 + Math.random() * 55}, `,
-          // Teal/cyan accents
-          `rgba(${20 + Math.random() * 40}, ${180 + Math.random() * 75}, ${200 + Math.random() * 55}, `,
-        ]
-
-        this.color = colorOptions[Math.floor(Math.random() * colorOptions.length)]
-        this.alpha = Math.random() * 0.05 + 0.02
-        this.vAlpha = Math.random() * 0.001 - 0.0005
-      }
-
-      update() {
-        // Subtle pulsating effect
-        this.alpha += this.vAlpha
-        if (this.alpha <= 0.01 || this.alpha >= 0.07) {
-          this.vAlpha *= -1
-        }
-      }
-
-      draw() {
-        if (!ctx) return
-
-        // Draw the nebula cloud
-        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius)
-        gradient.addColorStop(0, this.color + this.alpha + ")")
-        gradient.addColorStop(0.5, this.color + this.alpha * 0.5 + ")")
-        gradient.addColorStop(1, this.color + "0)")
-
-        ctx.fillStyle = gradient
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-        ctx.fill()
-      }
-    }
-
-    // Create particles
-    const particles: Particle[] = []
-    const particleCount = Math.min(300, Math.floor((window.innerWidth * window.innerHeight) / 4000))
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle())
-    }
-
-    // Create nebula clouds
-    const nebulaClouds: NebulaCloud[] = []
-    for (let i = 0; i < 8; i++) {
-      nebulaClouds.push(new NebulaCloud())
-    }
-
-    // Animation loop
-    const animate = () => {
-      if (!ctx) return
-
-      // Clear canvas with a dark background
-      ctx.fillStyle = "rgba(10, 5, 20, 0.2)" // Very dark purple that will build up
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      // Draw and update nebula clouds
-      nebulaClouds.forEach((cloud) => {
-        cloud.update()
-        cloud.draw()
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return
+      const rect = containerRef.current.getBoundingClientRect()
+      setMousePosition({
+        x: (e.clientX - rect.left) / rect.width,
+        y: (e.clientY - rect.top) / rect.height,
       })
-
-      // Draw and update particles
-      particles.forEach((particle) => {
-        particle.update()
-        particle.draw()
-      })
-
-      // Create flow lines between particles
-      ctx.strokeStyle = "rgba(120, 160, 255, 0.03)"
-      ctx.lineWidth = 0.5
-
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const distance = Math.sqrt(dx * dx + dy * dy)
-
-          if (distance < 100) {
-            ctx.beginPath()
-            ctx.moveTo(particles[i].x, particles[i].y)
-            ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.stroke()
-          }
-        }
-      }
-
-      requestAnimationFrame(animate)
     }
 
-    animate()
-
-    return () => {
-      window.removeEventListener("resize", setCanvasDimensions)
-    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
 
   return (
-    <section className="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden">
-      <canvas ref={canvasRef} className="webgl-canvas" />
+    <section
+      ref={containerRef}
+      className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden"
+    >
+      {/* Animated gradient mesh background */}
+      <div className="hero-gradient-mesh" />
 
-      <div className="container relative z-10 px-4 py-32 mx-auto text-center">
-        <div className="flex flex-col items-center max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6">
-            <span className="block">Hi, I'm Abhishek Sharma</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mt-2">
-              Software Developer
+      {/* Gradient orbs background with parallax */}
+      <div className="absolute inset-0">
+        <motion.div
+          className="gradient-orb gradient-orb-1"
+          animate={{
+            x: mousePosition.x * -40,
+            y: mousePosition.y * -30,
+          }}
+          transition={{ type: "spring", stiffness: 50, damping: 30 }}
+        />
+        <motion.div
+          className="gradient-orb gradient-orb-2"
+          animate={{
+            x: mousePosition.x * 30,
+            y: mousePosition.y * 20,
+          }}
+          transition={{ type: "spring", stiffness: 40, damping: 25 }}
+        />
+        <motion.div
+          className="gradient-orb gradient-orb-3"
+          animate={{
+            x: mousePosition.x * -20,
+            y: mousePosition.y * 35,
+          }}
+          transition={{ type: "spring", stiffness: 45, damping: 28 }}
+        />
+      </div>
+
+      {/* Subtle grid pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+          backgroundSize: "48px 48px",
+        }}
+      />
+
+      {/* Radial vignette for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 75%)",
+          opacity: 0.4,
+        }}
+      />
+
+      {/* Floating decorative elements */}
+      <FloatingDot className="absolute top-[15%] left-[8%] hidden md:block" />
+      <FloatingRing className="absolute top-[22%] right-[10%] hidden md:block" size={36} />
+      <FloatingCross className="absolute bottom-[30%] left-[5%] hidden md:block" size={14} />
+      <FloatingTriangle className="absolute top-[60%] right-[7%] hidden md:block" size={18} />
+      <FloatingDot className="absolute bottom-[20%] right-[15%] hidden md:block" />
+
+      <div className="container relative z-10 px-4 py-32 mx-auto">
+        <div className="flex flex-col items-center max-w-6xl mx-auto">
+          {/* Status badge with glow */}
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-12"
+          >
+            <span className="relative inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.3em] uppercase text-primary px-5 py-2.5 rounded-full border border-primary/20 bg-primary/[0.04] backdrop-blur-sm">
+              <motion.span
+                className="absolute inset-0 rounded-full"
+                animate={{
+                  boxShadow: [
+                    "0 0 8px 0px hsl(38 65% 58% / 0.0)",
+                    "0 0 16px 4px hsl(38 65% 58% / 0.15)",
+                    "0 0 8px 0px hsl(38 65% 58% / 0.0)",
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              Available for work
             </span>
-          </h1>
+          </motion.div>
 
-          <p className="mt-6 text-xl text-muted-foreground max-w-2xl">
-            A highly skilled and innovative Software Developer with expertise in full-stack development and
-            problem-solving. Dedicated to delivering exceptional user experiences in dynamic software environments.
-          </p>
-
-          <div className="flex flex-wrap justify-center gap-4 mt-10">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 border-0"
-            >
-              <Link href="#projects">
-                View My Work <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="rounded-full border-purple-400 dark:border-purple-700"
-            >
-              <Link href="/resume.pdf" target="_blank">
-                Download CV <Download className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+          {/* Main heading - Dramatic staggered letter animation */}
+          <div className="text-center relative">
+            {/* Sparkle near name */}
+            <AnimatedSparkle
+              className="absolute -top-4 -right-2 md:-right-8"
+              size={20}
+              delay={1.0}
+            />
+            <AnimatedSparkle
+              className="absolute top-6 -left-4 md:-left-10"
+              size={14}
+              delay={1.3}
+            />
+            <h1 className="font-serif leading-[0.85] tracking-tight">
+              <span className="block text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] xl:text-[11rem]">
+                <AnimatedText text="Abhishek" startDelay={0.2} />
+              </span>
+              <span className="block text-6xl sm:text-7xl md:text-8xl lg:text-[10rem] xl:text-[11rem] text-primary text-glow mt-1">
+                <AnimatedText text="Sharma" startDelay={0.5} />
+              </span>
+            </h1>
           </div>
 
-          <div className="flex justify-center gap-6 mt-10">
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-purple-500/20" asChild>
-              <Link href="https://github.com/Abhisheksharma99" target="_blank" aria-label="GitHub">
-                <Github className="h-5 w-5" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-full hover:bg-purple-500/20" asChild>
-              <Link href="https://linkedin.com/in/abhishek-sharma-663b08197" target="_blank" aria-label="LinkedIn">
-                <Linkedin className="h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
+          {/* Subtitle with animated line and TextScramble */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-10 flex items-center gap-5"
+          >
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="h-px w-16 bg-gradient-to-r from-transparent to-primary/50 origin-left"
+            />
+            <TextScramble
+              text="Software Developer"
+              trigger="mount"
+              speed={30}
+              className="text-[11px] tracking-[0.25em] uppercase text-muted-foreground"
+            />
+            <motion.div
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.6, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="h-px w-16 bg-gradient-to-l from-transparent to-primary/50 origin-right"
+            />
+          </motion.div>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 15, filter: "blur(4px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, delay: 1.0, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-8 text-lg md:text-xl text-muted-foreground max-w-2xl text-center leading-relaxed"
+          >
+            Crafting elegant, scalable digital experiences with modern technologies
+            and meticulous attention to detail.
+          </motion.p>
+
+          {/* CTA Buttons with magnetic effect */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap justify-center gap-4 mt-14 relative"
+          >
+            {/* Sparkle near CTA */}
+            <AnimatedSparkle
+              className="absolute -top-3 right-0 md:-right-6"
+              size={12}
+              delay={1.6}
+            />
+            <MagneticButton>
+              <Button
+                size="lg"
+                className="magnetic-btn rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-9 font-sans text-sm tracking-wide h-13 relative overflow-hidden group cursor-pointer"
+                onClick={() => smoothScrollTo("#projects")}
+              >
+                <span className="relative z-10 flex items-center">
+                  View My Work
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </Button>
+            </MagneticButton>
+
+            <MagneticButton>
+              <ResumeDownloadButton
+                variant="outline"
+                className="magnetic-btn rounded-full border-foreground/15 hover:border-primary/40 hover:bg-primary/5 px-9 font-sans text-sm tracking-wide h-13 backdrop-blur-sm group"
+              >
+                <span className="flex items-center">
+                  Download CV
+                  <Download className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
+                </span>
+              </ResumeDownloadButton>
+            </MagneticButton>
+          </motion.div>
+
+          {/* Social links */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1.3 }}
+            className="flex justify-center gap-3 mt-14"
+          >
+            {[
+              { href: "https://github.com/Abhisheksharma99", label: "GitHub", icon: Github },
+              { href: "https://linkedin.com/in/abhishek-sharma-663b08197", label: "LinkedIn", icon: Linkedin },
+            ].map((social, i) => (
+              <motion.div
+                key={social.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 1.3 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 border border-transparent hover:border-primary/20"
+                  asChild
+                >
+                  <Link href={social.href} target="_blank" aria-label={social.label}>
+                    <social.icon className="h-5 w-5" />
+                  </Link>
+                </Button>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <Button variant="ghost" size="sm" className="rounded-full opacity-70 hover:opacity-100">
-          <Link href="#about" className="flex items-center">
-            Scroll Down
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="ml-1 h-4 w-4"
-            >
-              <path d="M12 5v14M5 12l7 7 7-7" />
-            </svg>
-          </Link>
-        </Button>
-      </div>
+      {/* Scroll indicator with curly arrow doodle */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 1.6 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+      >
+        <a
+          href="#about"
+          onClick={(e) => { e.preventDefault(); smoothScrollTo("#about") }}
+          className="flex flex-col items-center gap-3 group"
+        >
+          <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground/60 group-hover:text-primary transition-colors duration-500">
+            Scroll
+          </span>
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-px h-10 bg-gradient-to-b from-primary/50 via-primary/20 to-transparent"
+          />
+        </a>
+        {/* Subtle curly arrow doodle beside scroll indicator */}
+        <div className="absolute -right-14 top-1 opacity-40 rotate-90">
+          <ScrollDrawDoodle doodle="curlyArrow" size={48} strokeWidth={1.5} />
+        </div>
+      </motion.div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
     </section>
   )
 }

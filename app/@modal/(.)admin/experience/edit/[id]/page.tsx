@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,8 @@ import { useToast } from "@/hooks/use-toast"
 import { getExperienceById, updateExperience } from "@/lib/actions/experience-actions"
 import { X } from "lucide-react"
 
-export default function EditExperienceModal({ params }) {
+export default function EditExperienceModal({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
@@ -30,7 +31,7 @@ export default function EditExperienceModal({ params }) {
   useEffect(() => {
     const fetchExperience = async () => {
       try {
-        const experience = await getExperienceById(params.id)
+        const experience = await getExperienceById(id)
         if (experience) {
           setFormData(experience)
         }
@@ -47,7 +48,7 @@ export default function EditExperienceModal({ params }) {
     }
 
     fetchExperience()
-  }, [params.id, toast])
+  }, [id, toast])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -63,7 +64,7 @@ export default function EditExperienceModal({ params }) {
     setIsSubmitting(true)
 
     try {
-      await updateExperience(formData._id, formData)
+      await updateExperience(id, formData)
       toast({
         title: "Experience updated",
         description: "Your experience has been updated successfully.",

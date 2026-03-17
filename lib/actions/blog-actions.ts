@@ -144,6 +144,33 @@ export async function getAllBlogSlugs() {
   }
 }
 
+export async function getBlogById(id: string) {
+  try {
+    const db = await dbConnect()
+    // If database connection failed, use fallback data
+    if (!db) {
+      console.log("Using fallback blog by id data")
+      const fallbackBlog = fallbackBlogs.find((blog) => blog._id === id)
+      return fallbackBlog || null
+    }
+
+    const blog = await Blog.findById(id)
+
+    if (!blog) {
+      // Find a fallback blog with the matching id
+      const fallbackBlog = fallbackBlogs.find((blog) => blog._id === id)
+      return fallbackBlog || null
+    }
+
+    return JSON.parse(JSON.stringify(blog))
+  } catch (error) {
+    console.error("Error fetching blog by id:", error)
+    // Find a fallback blog with the matching id
+    const fallbackBlog = fallbackBlogs.find((blog) => blog._id === id)
+    return fallbackBlog || null
+  }
+}
+
 // Admin actions
 export async function getAllBlogs() {
   try {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
+import { ImageUpload } from "@/components/admin/image-upload"
 import { getTestimonialById, updateTestimonial } from "@/lib/actions/testimonial-actions"
 import { X } from "lucide-react"
 
-export default function EditTestimonialModal({ params }) {
+export default function EditTestimonialModal({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
@@ -26,7 +28,7 @@ export default function EditTestimonialModal({ params }) {
   useEffect(() => {
     const fetchTestimonial = async () => {
       try {
-        const testimonial = await getTestimonialById(params.id)
+        const testimonial = await getTestimonialById(id)
         if (testimonial) {
           setFormData(testimonial)
         }
@@ -43,7 +45,7 @@ export default function EditTestimonialModal({ params }) {
     }
 
     fetchTestimonial()
-  }, [params.id, toast])
+  }, [id, toast])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -55,7 +57,7 @@ export default function EditTestimonialModal({ params }) {
     setIsSubmitting(true)
 
     try {
-      await updateTestimonial(formData._id, formData)
+      await updateTestimonial(id, formData)
       toast({
         title: "Testimonial updated",
         description: "Your testimonial has been updated successfully.",
@@ -131,19 +133,11 @@ export default function EditTestimonialModal({ params }) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                placeholder="/path/to/image.jpg"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter the URL of the image to be displayed with this testimonial
-              </p>
-            </div>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+              label="Profile Image"
+            />
 
             <div className="space-y-2">
               <Label htmlFor="quote">Testimonial Quote</Label>

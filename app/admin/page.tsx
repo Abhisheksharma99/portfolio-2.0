@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, FolderOpen, Briefcase, FileUp } from "lucide-react"
+import { FileText, FolderOpen, Briefcase, FileUp, Link2 } from "lucide-react"
 import Link from "next/link"
 
 export default function AdminDashboard() {
@@ -24,6 +24,13 @@ export default function AdminDashboard() {
       description: "Work experiences",
       icon: <Briefcase className="h-8 w-8 text-primary" />,
       link: "/admin/experience",
+    },
+    {
+      title: "Proposals",
+      value: "---",
+      description: "Personalized link generator",
+      icon: <Link2 className="h-8 w-8 text-primary" />,
+      link: "/admin/proposals",
     },
     {
       title: "Files",
@@ -130,7 +137,7 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </Link>
-              <Link href="/admin/files">
+              <Link href="/admin/resume">
                 <Card className="hover:bg-muted cursor-pointer transition-colors h-full">
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                     <FileUp className="h-8 w-8 text-primary mb-2" />

@@ -5,18 +5,20 @@ import { BlogSection } from "@/components/sections/blog-section"
 import { ServicesSection } from "@/components/sections/services-section"
 import { TestimonialsSection } from "@/components/sections/testimonials-section"
 import { ContactSection } from "@/components/sections/contact-section"
-import { SectionDivider } from "@/components/section-divider"
+import { PaintBrushDivider, GradientRevealLine } from "@/components/creative-dividers"
+import { ScrollProgress } from "@/components/scroll-progress"
 import { MouseSpotlight } from "@/components/mouse-spotlight"
+import { MarqueeStrip } from "@/components/marquee-strip"
 import { PersonJsonLd } from "@/components/seo/json-ld"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Abhishek Sharma | Software Developer",
-  description: "Portfolio website showcasing my work as a software developer with expertise in full-stack development and problem-solving.",
-  keywords: ["Abhishek Sharma", "Software Developer", "Full Stack Developer", "React", "Next.js", "Node.js", "MongoDB"],
+  description: "Portfolio of Abhishek Sharma — a dynamic Full-Stack Developer with expertise in building scalable applications, API development, and modern frontend engineering.",
+  keywords: ["Abhishek Sharma", "Software Developer", "Full Stack Developer", "React", "Next.js", "Node.js", "Angular", "Python"],
   openGraph: {
     title: "Abhishek Sharma | Software Developer",
-    description: "Portfolio website showcasing my work as a software developer with expertise in full-stack development and problem-solving.",
+    description: "Portfolio of Abhishek Sharma — a dynamic Full-Stack Developer with expertise in building scalable applications, API development, and modern frontend engineering.",
     url: "/",
     siteName: "Abhishek Sharma Portfolio",
     images: [
@@ -33,38 +35,42 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Abhishek Sharma | Software Developer",
-    description: "Portfolio website showcasing my work as a software developer with expertise in full-stack development and problem-solving.",
+    description: "Portfolio of Abhishek Sharma — a dynamic Full-Stack Developer with expertise in building scalable applications, API development, and modern frontend engineering.",
     images: ["/og-image.jpg"],
+  },
+  other: {
+    "theme-color": "#080808",
   },
 }
 
 export default function Home() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://abhishek-sharma-portfolio.com"
-  
+
   return (
     <main className="relative">
+      <ScrollProgress />
       <MouseSpotlight />
       <HeroSection />
-      <SectionDivider variant="wave" />
+      <MarqueeStrip />
       <AboutSection />
-      <SectionDivider variant="diagonal" />
+      <PaintBrushDivider />
       <ProjectsSection />
-      <SectionDivider variant="curve" />
-      <BlogSection />
-      <SectionDivider variant="zigzag" />
+      <GradientRevealLine />
       <ServicesSection />
-      <SectionDivider variant="wave" />
+      <PaintBrushDivider />
+      <BlogSection />
+      <GradientRevealLine />
       <TestimonialsSection />
-      <SectionDivider variant="diagonal" />
+      <PaintBrushDivider />
       <ContactSection />
-      
+
       {/* Structured Data */}
       <PersonJsonLd
         name="Abhishek Sharma"
         jobTitle="Software Developer"
         url={baseUrl}
         image={`${baseUrl}/profile-image.jpg`}
-        description="A highly skilled and innovative Software Developer with expertise in full-stack development and problem-solving."
+        description="Portfolio of Abhishek Sharma — a dynamic Full-Stack Developer with expertise in building scalable applications, API development, and modern frontend engineering."
         sameAs={[
           "https://github.com/Abhisheksharma99",
           "https://linkedin.com/in/abhishek-sharma-663b08197",

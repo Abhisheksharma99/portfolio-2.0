@@ -44,7 +44,7 @@ export function AdminLoginForm({ login }: AdminLoginFormProps) {
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-4">
             <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">JD</span>
+              <span className="text-white font-bold text-lg">AS</span>
             </div>
           </div>
           <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
@@ -86,9 +86,6 @@ export function AdminLoginForm({ login }: AdminLoginFormProps) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                For demo: email: admin@example.com, password: password
-              </p>
             </div>
           </CardContent>
           <CardFooter>

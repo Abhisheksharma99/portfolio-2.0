@@ -3,9 +3,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, Clock, Calendar } from "lucide-react"
+import { ArrowRight, Clock, Calendar } from "lucide-react"
 import { getBlogs } from "@/lib/actions/blog-actions"
+import { PageHero, StaggeredGrid, AnimatedCard, FloatingDecoration } from "@/components/page-effects"
+import { MarqueeStrip } from "@/components/marquee-strip"
 
 export const metadata: Metadata = {
   title: "Blog | Abhishek Sharma",
@@ -41,74 +42,72 @@ export default async function BlogPage() {
   const blogs = await getBlogs()
 
   return (
-    <main className="py-20 bg-background">
-      <div className="container px-4 mx-auto">
-        <div className="flex items-center mb-8">
-          <Button asChild variant="ghost" className="mr-4">
-            <Link href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </Button>
-        </div>
+    <main className="relative pt-32 pb-20 bg-background">
+      <FloatingDecoration variant="blog" />
 
-        <div className="max-w-3xl mx-auto text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">Blog Articles</h1>
-          <p className="text-lg text-muted-foreground">
-            Thoughts, insights, and tutorials on web development, design, and technology.
-          </p>
-        </div>
+      <PageHero
+        label="Journal"
+        title="Blog Articles"
+        subtitle="Thoughts, insights, and tutorials on web development, design, and technology."
+        backLink="/"
+        backLabel="Back to Home"
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <MarqueeStrip />
+
+      <div className="container px-4 mx-auto relative mt-16">
+        <StaggeredGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {blogs.length === 0 ? (
             <div className="col-span-3 text-center py-12">
-              <p className="text-muted-foreground">No blog posts found.</p>
+              <p className="text-muted-foreground font-sans">No blog posts found.</p>
             </div>
           ) : (
             blogs.map((blog) => (
-              <Card
-                key={blog._id}
-                className="overflow-hidden group hover:shadow-lg transition-shadow duration-300 glass-card border-0"
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={blog.image || "/placeholder.svg"}
-                    alt={blog.title}
-                    width={600}
-                    height={400}
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <Badge className="absolute top-2 right-2 bg-gradient-to-r from-purple-500 to-pink-600">
-                    {blog.category}
-                  </Badge>
-                </div>
-
-                <CardHeader>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2">
-                    <Calendar className="mr-1 h-4 w-4" />
-                    <span>{blog.date}</span>
-                    <span className="mx-2">•</span>
-                    <Clock className="mr-1 h-4 w-4" />
-                    <span>{blog.readTime}</span>
+              <AnimatedCard key={blog._id}>
+                <Card
+                  className="overflow-hidden group hover:shadow-lg transition-all duration-500 card-shine glass-card border-0 rounded-xl"
+                >
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={blog.image || "/placeholder.svg"}
+                      alt={blog.title}
+                      width={600}
+                      height={400}
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <Badge className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-[0.65rem] font-mono uppercase tracking-wider border-0">
+                      {blog.category}
+                    </Badge>
                   </div>
-                  <CardTitle className="line-clamp-2">{blog.title}</CardTitle>
-                </CardHeader>
 
-                <CardContent>
-                  <CardDescription className="text-base line-clamp-3">{blog.excerpt}</CardDescription>
-                </CardContent>
+                  <CardHeader>
+                    <div className="flex items-center text-muted-foreground mb-2">
+                      <Calendar className="mr-1.5 h-3 w-3" />
+                      <span className="font-mono text-xs">{blog.date}</span>
+                      <span className="mx-2 text-primary/30">|</span>
+                      <Clock className="mr-1.5 h-3 w-3" />
+                      <span className="font-mono text-xs">{blog.readTime}</span>
+                    </div>
+                    <CardTitle className="font-serif text-xl line-clamp-2">{blog.title}</CardTitle>
+                  </CardHeader>
 
-                <CardFooter>
-                  <Button asChild variant="ghost" className="p-0 hover:bg-transparent">
-                    <Link href={`/blog/${blog.slug}`} className="text-primary flex items-center">
-                      Read More <ArrowRight className="ml-2 h-4 w-4" />
+                  <CardContent>
+                    <CardDescription className="text-sm line-clamp-3 font-sans">{blog.excerpt}</CardDescription>
+                  </CardContent>
+
+                  <CardFooter>
+                    <Link
+                      href={`/blog/${blog.slug}`}
+                      className="animated-underline font-mono text-xs uppercase tracking-wider text-primary inline-flex items-center gap-2"
+                    >
+                      Read More <ArrowRight className="h-3 w-3" />
                     </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
+                  </CardFooter>
+                </Card>
+              </AnimatedCard>
             ))
           )}
-        </div>
+        </StaggeredGrid>
       </div>
     </main>
   )
