@@ -12,18 +12,19 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ImageUpload } from "@/components/admin/image-upload"
-import { getProjectById, updateProject } from "@/lib/actions/project-actions"
+import { useProjectStore } from "@/lib/stores/project-store"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { notFound } from "next/navigation"
 
 export default function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
+  const { projects, updateProject, initializeProjects } = useProjectStore()
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const projectId = Number.parseInt(id)
+  const project = projects.find((p) => p.id === projectId)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -39,43 +40,27 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
   const [tagInput, setTagInput] = useState("")
 
   useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        const project = await getProjectById(id)
-        if (!project) {
-          toast({
-            title: "Not found",
-            description: "Project not found.",
-            variant: "destructive",
-          })
-          router.push("/admin/projects")
-          return
-        }
+    initializeProjects()
+  }, [initializeProjects])
 
-        setFormData({
-          title: project.title || "",
-          description: project.description || "",
-          image: project.image || "/placeholder.svg?height=600&width=800",
-          tags: Array.isArray(project.tags) ? project.tags : [],
-          category: project.category || "",
-          demoUrl: project.demoUrl || "",
-          githubUrl: project.githubUrl || "",
-          featured: project.featured || false,
-        })
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Error fetching project:", error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch project. Please try again.",
-          variant: "destructive",
-        })
-        router.push("/admin/projects")
-      }
+  useEffect(() => {
+    if (project) {
+      setFormData({
+        title: project.title,
+        description: project.description,
+        image: project.image,
+        tags: [...project.tags],
+        category: project.category,
+        demoUrl: project.demoUrl,
+        githubUrl: project.githubUrl,
+        featured: project.featured,
+      })
     }
+  }, [project])
 
-    fetchProject()
-  }, [id, router, toast])
+  if (projects.length > 0 && !project) {
+    return notFound()
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -112,57 +97,29 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
-    // Validate form
     if (!formData.title || !formData.description || !formData.category || formData.tags.length === 0) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields.",
         variant: "destructive",
       })
-      setIsSubmitting(false)
       return
     }
 
-    try {
-      await updateProject(id, formData)
+    updateProject(projectId, {
+      id: projectId,
+      ...formData,
+    })
 
-      toast({
-        title: "Project updated",
-        description: "Your project has been updated successfully.",
-      })
+    toast({
+      title: "Project updated",
+      description: "Your project has been updated successfully.",
+    })
 
-      router.push("/admin/projects")
-    } catch (error) {
-      console.error("Error updating project:", error)
-      toast({
-        title: "Error",
-        description: "Failed to update project. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center">
-          <Button asChild variant="ghost" className="mr-4">
-            <Link href="/admin/projects">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Projects
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Edit Project</h1>
-        </div>
-        <div className="text-center py-8">Loading...</div>
-      </div>
-    )
+    router.push("/admin/projects")
   }
 
   return (
@@ -177,8 +134,8 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
           </Button>
           <h1 className="text-3xl font-bold">Edit Project</h1>
         </div>
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          <Save className="mr-2 h-4 w-4" /> {isSubmitting ? "Saving..." : "Save Changes"}
+        <Button onClick={handleSubmit}>
+          <Save className="mr-2 h-4 w-4" /> Save Changes
         </Button>
       </div>
 
@@ -254,11 +211,16 @@ export default function EditProjectPage({ params }: { params: Promise<{ id: stri
                 />
               </div>
 
-              <ImageUpload
-                value={formData.image}
-                onChange={(url) => setFormData({...formData, image: url})}
-                label="Project Image"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="image">Project Image URL</Label>
+                <Input
+                  id="image"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleChange}
+                  placeholder="/path/to/image.jpg"
+                />
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="demoUrl">Demo URL</Label>

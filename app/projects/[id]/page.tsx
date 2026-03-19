@@ -1,67 +1,48 @@
-import type { Metadata } from "next"
+"use client"
+
+import { useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowLeft, ExternalLink, Github, Calendar } from "lucide-react"
+import { ArrowLeft, ExternalLink, Github } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useProjectStore } from "@/lib/stores/project-store"
+import { useParams } from "next/navigation"
 import { notFound } from "next/navigation"
-import { getProjectById, getProjects } from "@/lib/actions/project-actions"
 
-interface ProjectPageProps {
-  params: Promise<{ id: string }>
-}
+export default function ProjectPage() {
+  const params = useParams()
+  const id = Number.parseInt(params.id as string)
+  const { projects, initializeProjects } = useProjectStore()
 
-export async function generateStaticParams() {
-  try {
-    const projects = await getProjects()
-    return projects.map((project: any) => ({ id: project._id }))
-  } catch {
-    return []
+  useEffect(() => {
+    initializeProjects()
+  }, [initializeProjects])
+
+  const project = projects.find((p) => p.id === id)
+
+  if (projects.length > 0 && !project) {
+    return notFound()
   }
-}
-
-export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
-  const { id } = await params
-  const project = await getProjectById(id)
 
   if (!project) {
-    return { title: "Project Not Found" }
-  }
-
-  return {
-    title: `${project.title} | Abhishek Sharma`,
-    description: project.description,
-  }
-}
-
-export default async function ProjectPage({ params }: ProjectPageProps) {
-  const { id } = await params
-  const project = await getProjectById(id)
-
-  if (!project) {
-    notFound()
+    return (
+      <main className="relative pt-32 pb-20 bg-background">
+        <div className="container px-4 mx-auto text-center">Loading...</div>
+      </main>
+    )
   }
 
   return (
     <main className="relative pt-32 pb-20 bg-background">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute -top-[300px] left-1/2 -translate-x-1/2 w-[900px] h-[600px] rounded-full opacity-[0.07]"
-          style={{
-            background: "radial-gradient(circle, hsl(38 65% 58%) 0%, transparent 70%)",
-            filter: "blur(100px)",
-          }}
-        />
-      </div>
-
       <div className="container px-4 mx-auto relative">
         <div className="flex items-center mb-12">
           <Link
-            href="/projects"
+            href="/"
             className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Projects
+            Back to Home
           </Link>
         </div>
 
@@ -81,18 +62,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <h1 className="font-serif text-4xl md:text-5xl leading-tight mb-4">
               {project.title}
             </h1>
-
-            {project.createdAt && (
-              <div className="flex items-center text-muted-foreground mb-6">
-                <Calendar className="mr-1.5 h-3 w-3" />
-                <span className="font-mono text-xs uppercase tracking-wider">
-                  {new Date(project.createdAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                  })}
-                </span>
-              </div>
-            )}
           </div>
 
           <div className="relative aspect-video mb-10 rounded-xl overflow-hidden border border-primary/10 bg-gradient-to-br from-foreground/[0.03] to-foreground/[0.01]">
@@ -139,9 +108,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </Link>
               </Button>
             )}
-            {project.sourceUrl && project.sourceUrl !== "#" && (
+            {project.githubUrl && project.githubUrl !== "#" && (
               <Button asChild variant="outline" size="sm" className="font-mono text-xs uppercase tracking-wider">
-                <Link href={project.sourceUrl} target="_blank">
+                <Link href={project.githubUrl} target="_blank">
                   <Github className="mr-2 h-3.5 w-3.5" />
                   Source Code
                 </Link>

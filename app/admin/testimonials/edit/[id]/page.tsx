@@ -9,19 +9,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Save, Star } from "lucide-react"
+import { ArrowLeft, Save } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ImageUpload } from "@/components/admin/image-upload"
-import { getTestimonialById, updateTestimonial } from "@/lib/actions/testimonial-actions"
+import { useTestimonialStore } from "@/lib/stores/testimonial-store"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
 export default function EditTestimonialPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
+  const { testimonials, updateTestimonial, initializeTestimonials } = useTestimonialStore()
 
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const testimonialId = Number.parseInt(id)
+  const testimonial = testimonials.find((t) => t.id === testimonialId)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -31,39 +32,23 @@ export default function EditTestimonialPage({ params }: { params: Promise<{ id: 
   })
 
   useEffect(() => {
-    const fetchTestimonial = async () => {
-      try {
-        const testimonial = await getTestimonialById(id)
-        if (!testimonial) {
-          toast({
-            title: "Not found",
-            description: "Testimonial not found.",
-            variant: "destructive",
-          })
-          router.push("/admin/testimonials")
-          return
-        }
+    initializeTestimonials()
+  }, [initializeTestimonials])
 
-        setFormData({
-          name: testimonial.name || "",
-          position: testimonial.position || "",
-          image: testimonial.image || "/placeholder.svg?height=100&width=100",
-          quote: testimonial.quote || "",
-        })
-        setIsLoading(false)
-      } catch (error) {
-        console.error("Error fetching testimonial:", error)
-        toast({
-          title: "Error",
-          description: "Failed to fetch testimonial. Please try again.",
-          variant: "destructive",
-        })
-        router.push("/admin/testimonials")
-      }
+  useEffect(() => {
+    if (testimonial) {
+      setFormData({
+        name: testimonial.name,
+        position: testimonial.position,
+        image: testimonial.image,
+        quote: testimonial.quote,
+      })
     }
+  }, [testimonial])
 
-    fetchTestimonial()
-  }, [id, router, toast])
+  if (testimonials.length > 0 && !testimonial) {
+    return notFound()
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -73,57 +58,29 @@ export default function EditTestimonialPage({ params }: { params: Promise<{ id: 
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
-    // Validate form
     if (!formData.name || !formData.position || !formData.quote) {
       toast({
         title: "Missing fields",
         description: "Please fill in all required fields.",
         variant: "destructive",
       })
-      setIsSubmitting(false)
       return
     }
 
-    try {
-      await updateTestimonial(id, formData)
+    updateTestimonial(testimonialId, {
+      id: testimonialId,
+      ...formData,
+    })
 
-      toast({
-        title: "Testimonial updated",
-        description: "Your testimonial has been updated successfully.",
-      })
+    toast({
+      title: "Testimonial updated",
+      description: "Your testimonial has been updated successfully.",
+    })
 
-      router.push("/admin/testimonials")
-    } catch (error) {
-      console.error("Error updating testimonial:", error)
-      toast({
-        title: "Error",
-        description: "Failed to update testimonial. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center">
-          <Button asChild variant="ghost" className="mr-4">
-            <Link href="/admin/testimonials">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Testimonials
-            </Link>
-          </Button>
-          <h1 className="text-3xl font-bold">Edit Testimonial</h1>
-        </div>
-        <div className="text-center py-8">Loading...</div>
-      </div>
-    )
+    router.push("/admin/testimonials")
   }
 
   return (
@@ -138,8 +95,8 @@ export default function EditTestimonialPage({ params }: { params: Promise<{ id: 
           </Button>
           <h1 className="text-3xl font-bold">Edit Testimonial</h1>
         </div>
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          <Save className="mr-2 h-4 w-4" /> {isSubmitting ? "Saving..." : "Save Changes"}
+        <Button onClick={handleSubmit}>
+          <Save className="mr-2 h-4 w-4" /> Save Changes
         </Button>
       </div>
 
@@ -186,11 +143,16 @@ export default function EditTestimonialPage({ params }: { params: Promise<{ id: 
 
           <Card>
             <CardContent className="p-6 space-y-6">
-              <ImageUpload
-                value={formData.image}
-                onChange={(url) => setFormData({...formData, image: url})}
-                label="Profile Image"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="image">Profile Image URL</Label>
+                <Input
+                  id="image"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleChange}
+                  placeholder="/path/to/image.jpg"
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
