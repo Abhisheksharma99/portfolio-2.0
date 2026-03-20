@@ -2,142 +2,211 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react"
-import { CardIllumination } from "@/components/card-illumination"
-import { useTestimonialStore } from "@/lib/stores/testimonial-store"
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
+import { Star, Quote } from "lucide-react"
+import { getTestimonials } from "@/lib/actions/testimonial-actions"
+import { fallbackTestimonials } from "@/lib/fallback-data"
+import { DoodleHighlight } from "@/components/svg-doodles"
+import { FloatingRing, FloatingDot } from "@/components/floating-elements"
 
-export function TestimonialsSection() {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const carouselRef = useRef<HTMLDivElement>(null)
-  const { testimonials, initializeTestimonials } = useTestimonialStore()
+function TiltCard({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const rotateX = useMotionValue(0)
+  const rotateY = useMotionValue(0)
+  const springX = useSpring(rotateX, { stiffness: 300, damping: 30 })
+  const springY = useSpring(rotateY, { stiffness: 300, damping: 30 })
 
-  useEffect(() => {
-    // Initialize testimonials from localStorage if available
-    initializeTestimonials()
-  }, [initializeTestimonials])
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    rotateX.set(-y * 12)
+    rotateY.set(x * 12)
   }
 
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + testimonials.length) % testimonials.length)
+  const handleMouseLeave = () => {
+    rotateX.set(0)
+    rotateY.set(0)
   }
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      const scrollPosition = currentIndex * (carouselRef.current.offsetWidth / 1)
-      carouselRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      })
-    }
-  }, [currentIndex])
-
-  // Auto-scroll
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide()
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [currentIndex])
 
   return (
-    <section id="testimonials" className="py-32 md:py-40 bg-background relative overflow-hidden">
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: springX,
+        rotateY: springY,
+        transformStyle: "preserve-3d",
+      }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-1">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`h-4 w-4 ${
+            i < rating
+              ? "fill-primary text-primary"
+              : "fill-transparent text-muted-foreground/30"
+          }`}
+        />
+      ))}
+    </div>
+  )
+}
+
+function StackingTestimonialCard({
+  testimonial,
+  index,
+  total,
+}: {
+  testimonial: any
+  index: number
+  total: number
+}) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start start", "end start"],
+  })
+
+  // Once this card's top hits the viewport top and scrolls further,
+  // it shrinks and becomes slightly transparent (covered by next card)
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
+  const opacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 1, 0.4])
+
+  return (
+    <div
+      ref={cardRef}
+      className="sticky top-[15vh]"
+      style={{ zIndex: index + 1 }}
+    >
+      <motion.div style={{ scale, opacity }}>
+        <TiltCard>
+          <div
+            className="w-full max-w-3xl mx-auto rounded-2xl border border-border/30 bg-card/95 backdrop-blur-xl p-8 md:p-12 card-shine relative overflow-hidden shadow-xl shadow-black/5"
+            style={{ perspective: "800px" }}
+          >
+            {/* Subtle glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent pointer-events-none rounded-2xl" />
+
+            {/* Quote icon */}
+            <div className="mb-6 relative">
+              <Quote className="h-10 w-10 text-primary/10 rotate-180" />
+            </div>
+
+            {/* Star rating */}
+            <div className="mb-6">
+              <StarRating rating={testimonial.rating || 5} />
+            </div>
+
+            {/* Quote text */}
+            <blockquote
+              className="font-serif text-xl sm:text-2xl md:text-3xl leading-snug tracking-tight text-foreground/85 mb-10"
+              style={{ transform: "translateZ(15px)", transformStyle: "preserve-3d" }}
+            >
+              &ldquo;{testimonial.quote || testimonial.content}&rdquo;
+            </blockquote>
+
+            {/* Attribution */}
+            <div className="flex items-center gap-5" style={{ transform: "translateZ(10px)", transformStyle: "preserve-3d" }}>
+              <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20 ring-4 ring-primary/[0.04] flex-shrink-0">
+                <Image
+                  src={testimonial.image || "/placeholder.svg?height=100&width=100"}
+                  alt={testimonial.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div>
+                <h4 className="font-sans text-base font-semibold tracking-tight">
+                  {testimonial.name}
+                </h4>
+                <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground mt-0.5">
+                  {testimonial.position}
+                  {testimonial.company && (
+                    <>
+                      <span className="text-primary/30 mx-2">&#11045;</span>
+                      {testimonial.company}
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Card number */}
+            <div className="absolute top-8 right-8 md:top-12 md:right-12 font-mono text-[11px] tracking-widest text-muted-foreground/30">
+              {String(index + 1).padStart(2, "0")}/{String(total).padStart(2, "0")}
+            </div>
+          </div>
+        </TiltCard>
+      </motion.div>
+    </div>
+  )
+}
+
+export function TestimonialsSection() {
+  const [testimonials, setTestimonials] = useState<any[]>(fallbackTestimonials)
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const data = await getTestimonials()
+        if (data?.length > 0) setTestimonials(data)
+      } catch {
+        // keep fallback
+      }
+    }
+    fetchTestimonials()
+  }, [])
+
+  return (
+    <section id="testimonials" className="bg-background relative overflow-hidden">
       {/* Background accents */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="container px-4 mx-auto">
-        {/* Section header */}
+      {/* Floating decorative elements */}
+      <FloatingRing className="absolute top-20 right-16 hidden md:block" size={50} />
+      <FloatingRing className="absolute bottom-32 left-10 hidden md:block" size={30} />
+      <FloatingDot className="absolute top-40 left-[15%] hidden md:block" />
+      <FloatingDot className="absolute bottom-20 right-[20%] hidden md:block" />
+
+      {/* Section header */}
+      <div className="container px-4 mx-auto pt-32 md:pt-40">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30, rotateX: 8 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ perspective: 800 }}
           className="mb-12"
         >
-          <h2 className="text-5xl sm:text-6xl md:text-7xl mt-4 tracking-tight font-bold">
-            Kind words<span className="text-primary">.</span>
+          <span className="section-label">Testimonials</span>
+          <h2 className="font-serif text-5xl sm:text-6xl md:text-7xl mt-4 tracking-tight">
+            <DoodleHighlight type="underline">Kind words</DoodleHighlight>
+            <span className="text-primary">.</span>
           </h2>
         </motion.div>
+      </div>
 
-        <div className="relative max-w-4xl mx-auto">
-          <div ref={carouselRef} className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {testimonials.map((testimonial) => (
-                <div key={testimonial.id} className="w-full flex-shrink-0 px-4">
-                  <CardIllumination className="h-full">
-                    <Card className="h-full glass-card border-0">
-                      <CardContent className="p-8">
-                        <Quote className="h-10 w-10 text-primary/40 mb-4" />
-
-                        <p className="text-lg mb-6 italic text-muted-foreground">
-                          &ldquo;{testimonial.content}&rdquo;
-                        </p>
-
-                        <div className="flex items-center">
-                          <div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 gradient-border p-0">
-                            <Image
-                              src={testimonial.image || "/placeholder.svg"}
-                              alt={testimonial.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-
-                          <div>
-                            <h4 className="font-semibold">{testimonial.name}</h4>
-                            <p className="text-sm text-muted-foreground">{testimonial.position}</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </CardIllumination>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-background/80 backdrop-blur-sm border-purple-400/30 dark:border-purple-700/30 shadow-md z-10"
-            onClick={prevSlide}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Previous testimonial</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 rounded-full bg-background/80 backdrop-blur-sm border-purple-400/30 dark:border-purple-700/30 shadow-md z-10"
-            onClick={nextSlide}
-          >
-            <ChevronRight className="h-4 w-4" />
-            <span className="sr-only">Next testimonial</span>
-          </Button>
-
-          <div className="flex justify-center mt-8 gap-2">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentIndex ? "bg-primary" : "bg-primary/20"
-                }`}
-                onClick={() => setCurrentIndex(index)}
-                aria-label={`Go to testimonial ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
+      {/* Stacking cards — each card is sticky, subsequent cards scroll over previous */}
+      <div className="container px-4 mx-auto pb-32 md:pb-40">
+        {testimonials.map((testimonial, index) => (
+          <StackingTestimonialCard
+            key={testimonial._id}
+            testimonial={testimonial}
+            index={index}
+            total={testimonials.length}
+          />
+        ))}
       </div>
     </section>
   )
