@@ -56,7 +56,19 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
+  }
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
   }
   ::selection {
     background: hsl(38 65% 58% / 0.25);
@@ -731,6 +743,13 @@
   }
   .gradient-orb {
     animation: none;
+  }
+  /* Disable GSAP pinning in reduced motion */
+  .pin-spacer {
+    display: none !important;
+  }
+  [style*="position: fixed"] {
+    position: relative !important;
   }
 }
 

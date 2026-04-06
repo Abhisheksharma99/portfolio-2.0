@@ -5,11 +5,14 @@ import { BlogSection } from "@/components/sections/blog-section"
 import { ServicesSection } from "@/components/sections/services-section"
 import { TestimonialsSection } from "@/components/sections/testimonials-section"
 import { ContactSection } from "@/components/sections/contact-section"
-import { PaintBrushDivider, GradientRevealLine } from "@/components/creative-dividers"
+import { StoryIntroSection } from "@/components/sections/story-intro-section"
+import { GradientRevealLine } from "@/components/creative-dividers"
 import { ScrollProgress } from "@/components/scroll-progress"
 import { MouseSpotlight } from "@/components/mouse-spotlight"
 import { MarqueeStrip } from "@/components/marquee-strip"
 import { PersonJsonLd } from "@/components/seo/json-ld"
+import { WaveDivider, PaintBrushDivider } from "@/components/wow-factor-effects/section-transitions"
+import { ChapterIndicators } from "@/components/chapter-indicators"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -50,18 +53,46 @@ export default function Home() {
     <main className="relative">
       <ScrollProgress />
       <MouseSpotlight />
+      <ChapterIndicators />
+
+      {/* Chapter 1: The Introduction */}
       <HeroSection />
       <MarqueeStrip />
+
+      {/* Chapter 2: The Story (GSAP pinned section) */}
+      <StoryIntroSection />
+
+      {/* Chapter 3: About */}
       <AboutSection />
+
+      {/* Paint brush transition */}
       <PaintBrushDivider />
+
+      {/* Chapter 4: Selected Work */}
       <ProjectsSection />
+
+      {/* Gradient line transition */}
       <GradientRevealLine />
+
+      {/* Chapter 5: Services */}
       <ServicesSection />
-      <PaintBrushDivider />
+
+      {/* Wave transition */}
+      <WaveDivider />
+
+      {/* Chapter 6: Blog */}
       <BlogSection />
+
+      {/* Gradient line transition */}
       <GradientRevealLine />
+
+      {/* Chapter 7: Testimonials */}
       <TestimonialsSection />
+
+      {/* Paint brush transition */}
       <PaintBrushDivider />
+
+      {/* Chapter 8: Contact */}
       <ContactSection />
 
       {/* Structured Data */}

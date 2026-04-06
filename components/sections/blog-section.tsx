@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -10,10 +9,12 @@ import { ArrowRight, ArrowUpRight, Clock, Calendar } from "lucide-react"
 import { getRecentBlogs } from "@/lib/actions/blog-actions"
 import { fallbackBlogs } from "@/lib/fallback-data"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { BlogCover } from "@/components/blog-cover"
 import { DoodleHighlight } from "@/components/svg-doodles"
 import { TextScramble } from "@/components/text-scramble"
-import { FloatingDiamond, FloatingDot } from "@/components/floating-elements"
-import { SwoopIn } from "@/components/swoop-in"
+import { SvgLightbulb, SvgTerminal } from "@/components/svg-illustrations"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap-config"
 
 function TiltWrapper({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -56,7 +57,7 @@ function TiltWrapper({ children }: { children: React.ReactNode }) {
 export function BlogSection() {
   const [blogs, setBlogs] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const sectionRef = useScrollReveal<HTMLElement>()
+  const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -72,16 +73,39 @@ export function BlogSection() {
     fetchBlogs()
   }, [])
 
+  useGSAP(() => {
+    const cards = sectionRef.current?.querySelectorAll(".blog-card")
+    if (!cards || cards.length === 0) return
+
+    gsap.set(cards, { opacity: 0, y: 60, scale: 0.92 })
+    ScrollTrigger.batch(cards, {
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: "power2.out",
+        })
+      },
+      start: "top 90%",
+      once: true,
+    })
+  }, { scope: sectionRef })
+
   return (
     <section id="blog" ref={sectionRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
       {/* Background accent */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/[0.015] rounded-full blur-[100px] pointer-events-none" />
 
       {/* Floating decorative elements */}
-      <FloatingDiamond className="absolute top-28 right-[10%] pointer-events-none hidden md:block" size={16} />
-      <FloatingDiamond className="absolute bottom-36 left-[6%] pointer-events-none hidden md:block" size={12} />
-      <FloatingDot className="absolute top-[40%] right-[5%] pointer-events-none hidden md:block" />
-      <FloatingDot className="absolute bottom-24 right-[30%] pointer-events-none hidden md:block" />
+      <ParallaxLayer speed={-0.15} className="absolute top-28 right-[10%] pointer-events-none hidden md:block z-0">
+        <SvgLightbulb className="w-9 h-9 opacity-25" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.25} className="absolute bottom-36 left-[6%] pointer-events-none hidden md:block z-0">
+        <SvgTerminal className="w-8 h-8 opacity-20" />
+      </ParallaxLayer>
 
       <div className="container px-4 mx-auto">
         {/* Section header */}
@@ -132,10 +156,9 @@ export function BlogSection() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ perspective: "1200px" }}>
             {blogs.slice(0, 3).map((post, index) => (
-              <SwoopIn
+              <div
                 key={post._id}
-                direction={index % 2 === 0 ? "left" : "right"}
-                delay={index * 0.12}
+                className="blog-card"
               >
                 <TiltWrapper>
                 <motion.article
@@ -149,21 +172,9 @@ export function BlogSection() {
                 >
                   <Link href={`/blog/${post.slug}`} className="block">
                     <div className="rounded-2xl overflow-hidden border border-border/30 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:border-primary/25 hover:shadow-2xl hover:shadow-primary/[0.03] card-shine">
-                      {/* Image */}
-                      <div className="relative aspect-[16/10] overflow-hidden">
-                        <Image
-                          src={post.image || "/placeholder.svg?height=400&width=600"}
-                          alt={post.title}
-                          width={600}
-                          height={400}
-                          className="object-cover transition-all duration-700 group-hover:scale-[1.04]"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-50" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                        <span className="absolute top-4 left-4 font-mono text-[9px] tracking-[0.15em] uppercase text-primary/90 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-border/30">
-                          {post.category}
-                        </span>
+                      {/* Cover */}
+                      <div className="relative overflow-hidden">
+                        <BlogCover title={post.title} category={post.category} className="transition-all duration-700 group-hover:scale-[1.04]" />
                       </div>
 
                       {/* Content */}
@@ -197,7 +208,7 @@ export function BlogSection() {
                   </Link>
                 </motion.article>
                 </TiltWrapper>
-              </SwoopIn>
+              </div>
             ))}
           </div>
         )}

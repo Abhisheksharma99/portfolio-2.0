@@ -42,6 +42,8 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
     setIsHovered(true)
   }
 
+  const cardHref = project.demoUrl || `/projects/${project._id}`
+
   return (
     <motion.div
       ref={cardRef}
@@ -56,19 +58,30 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
       }}
       className="group w-[85vw] md:w-[550px] lg:w-[620px] flex-shrink-0"
     >
-      <div className="relative rounded-2xl overflow-hidden border border-border/30 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:border-primary/25 hover:shadow-2xl hover:shadow-primary/[0.04] card-shine" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
-        {/* Image */}
+      <Link href={cardHref} target={project.demoUrl ? "_blank" : undefined} className="block">
+      <div className="relative rounded-2xl overflow-hidden border border-border/30 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:border-primary/25 hover:shadow-2xl hover:shadow-primary/[0.04] card-shine cursor-pointer" style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d" }}>
+        {/* Media */}
         <div className="relative aspect-[16/10] overflow-hidden">
-          <Image
-            src={project.image || "/placeholder.svg?height=600&width=800"}
-            alt={project.title}
-            width={800}
-            height={600}
-            className="object-cover transition-all duration-700 group-hover:scale-[1.04]"
-          />
+          {project.mediaType === "video" ? (
+            <video
+              src={project.image}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.04]"
+            />
+          ) : (
+            <Image
+              src={project.image || "/placeholder.svg?height=600&width=800"}
+              alt={project.title}
+              width={800}
+              height={600}
+              unoptimized={project.mediaType === "gif"}
+              className="object-cover transition-all duration-700 group-hover:scale-[1.04]"
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent opacity-60" />
-
-          {/* Hover overlay with gradient */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           {project.featured && (
@@ -77,7 +90,6 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
             </Badge>
           )}
 
-          {/* Project number with DoodleHighlight circle on hover */}
           <span className="absolute top-5 left-5 font-mono text-[11px] tracking-widest text-foreground/10 group-hover:text-primary/30 transition-colors duration-500">
             {isHovered ? (
               <DoodleHighlight type="circle" color="hsl(38 65% 58% / 0.35)">
@@ -95,10 +107,7 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
             <h3 className="font-serif text-2xl tracking-tight group-hover:text-primary transition-colors duration-300">
               {project.title}
             </h3>
-            <motion.div
-              whileHover={{ x: 3, y: -3 }}
-              className="mt-1"
-            >
+            <motion.div whileHover={{ x: 3, y: -3 }} className="mt-1">
               <ArrowUpRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary transition-all duration-300 flex-shrink-0" />
             </motion.div>
           </div>
@@ -107,45 +116,33 @@ function ProjectCard({ project, index }: { project: any; index: number }) {
             {project.description}
           </p>
 
-          {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-6">
             {project.tags?.slice(0, 4).map((tag: string, i: number) => (
-              <span
-                key={i}
-                className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground/70 px-3 py-1.5 rounded-full border border-border/30 bg-background/50 hover:border-primary/20 hover:text-primary/70 transition-all duration-300"
-              >
+              <span key={i} className="font-mono text-[9px] tracking-[0.15em] uppercase text-muted-foreground/70 px-3 py-1.5 rounded-full border border-border/30 bg-background/50 hover:border-primary/20 hover:text-primary/70 transition-all duration-300">
                 {tag}
               </span>
             ))}
           </div>
 
-          {/* Links */}
           <div className="flex gap-4 pt-4 border-t border-border/20">
             {project.demoUrl && (
-              <Link
-                href={project.demoUrl}
-                target="_blank"
-                className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 group/link"
-              >
+              <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.demoUrl, "_blank") }} className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 group/link cursor-pointer">
                 <ExternalLink className="h-3.5 w-3.5" />
                 Live Demo
                 <ArrowUpRight className="h-3 w-3 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all duration-300" />
-              </Link>
+              </span>
             )}
             {(project.githubUrl || project.sourceUrl) && (
-              <Link
-                href={project.githubUrl || project.sourceUrl}
-                target="_blank"
-                className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 group/link"
-              >
+              <span onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.githubUrl || project.sourceUrl, "_blank") }} className="inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-primary transition-colors duration-300 group/link cursor-pointer">
                 <Github className="h-3.5 w-3.5" />
                 Source Code
                 <ArrowUpRight className="h-3 w-3 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all duration-300" />
-              </Link>
+              </span>
             )}
           </div>
         </div>
       </div>
+      </Link>
     </motion.div>
   )
 }
@@ -166,11 +163,9 @@ export function ProjectsSection() {
     fetchProjects()
   }, [])
 
-  const displayProjects = projects.slice(0, 6)
-  const cardCount = displayProjects.length
-  // Each card ~640px (lg) + 24px gap
+  const displayProjects = projects.slice(0, 9)
   const cardWidth = 660
-  const totalScrollWidth = (cardCount - 1) * cardWidth
+  const totalScrollWidth = (displayProjects.length - 1) * cardWidth
 
   const { scrollYProgress } = useScroll({
     target: outerRef,
@@ -191,7 +186,7 @@ export function ProjectsSection() {
         style={{ height: `calc(100vh + ${totalScrollWidth}px)` }}
       >
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-          {/* Section header inside sticky so it stays visible */}
+          {/* Section header */}
           <div className="container px-4 mx-auto mb-10">
             <SwoopIn direction="left">
               <motion.div
@@ -237,12 +232,21 @@ export function ProjectsSection() {
             {displayProjects.map((project, index) => (
               <ProjectCard key={project._id} project={project} index={index} />
             ))}
-            {/* Trailing spacer so last card can center */}
             <div className="w-[50vw] flex-shrink-0" />
           </motion.div>
 
-          {/* Scroll indicator */}
+          {/* Progress bar */}
           <div className="container px-4 mx-auto mt-8">
+            <motion.div className="relative h-[2px] bg-border/20 rounded-full overflow-hidden">
+              <motion.div
+                className="absolute inset-y-0 left-0 bg-primary/60 rounded-full origin-left"
+                style={{ scaleX: scrollYProgress }}
+              />
+            </motion.div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div className="container px-4 mx-auto mt-6">
             <div className="flex items-center gap-4 text-muted-foreground/50">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border/30 to-transparent" />
               <span className="font-mono text-[10px] tracking-[0.25em] uppercase">
@@ -259,7 +263,7 @@ export function ProjectsSection() {
             </div>
           </div>
 
-          {/* Floating decorative elements */}
+          {/* Floating elements */}
           <FloatingRing className="absolute top-20 right-[10%] pointer-events-none hidden md:block" size={50} />
           <FloatingRing className="absolute bottom-32 left-[5%] pointer-events-none hidden md:block" size={30} />
           <FloatingTriangle className="absolute top-40 left-[15%] pointer-events-none hidden md:block" size={22} />

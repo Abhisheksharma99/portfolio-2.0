@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
+import { BlogCover } from "@/components/blog-cover"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Calendar, Clock, Share2, Bookmark, ThumbsUp } from "lucide-react"
 import { notFound } from "next/navigation"
@@ -24,11 +25,18 @@ export async function generateStaticParams() {
     console.error("Error fetching blog slugs:", error)
     // Use hardcoded fallback slugs if there's an error
     return [
-      { slug: "getting-started-with-nextjs" },
-      { slug: "mastering-typescript-for-react-development" },
-      { slug: "building-responsive-uis-with-tailwind-css" },
-      { slug: "introduction-to-server-components-in-react" },
-      { slug: "creating-animations-with-framer-motion" },
+      { slug: "cad-reconstruction-opencascade-gpt4o-vision" },
+      { slug: "langchain-ai-agents-recruitment-platform" },
+      { slug: "realtime-delivery-tracking-nestjs-socketio-postgis" },
+      { slug: "migrating-pug-express-to-react-nestjs-performance" },
+      { slug: "deploying-fullstack-apps-single-vps-docker-nginx" },
+      { slug: "multi-tenant-healthcare-platform-angular-sequelize" },
+      { slug: "prisma-vs-sequelize-vs-typeorm-nodejs-orm-2026" },
+      { slug: "interactive-3d-react-three-fiber-drei" },
+      { slug: "otp-authentication-without-firebase-sms-rate-limiting" },
+      { slug: "pnpm-workspaces-turborepo-fullstack-monorepo" },
+      { slug: "automating-lead-generation-python-agents-n8n" },
+      { slug: "gsap-scrolltrigger-vs-framer-motion-nextjs" },
     ]
   }
 }
@@ -138,7 +146,7 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-0 mb-8">
                   <div className="flex items-center mr-6">
                     <Image
-                      src="/placeholder.svg?height=40&width=40"
+                      src="https://res.cloudinary.com/duhyrtr2h/image/upload/c_fill,g_face,w_80,h_80,q_auto/v1775498579/portfolio/abhishek-profile.png"
                       alt="Abhishek Sharma"
                       width={40}
                       height={40}
@@ -161,9 +169,7 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
             </RevealSection>
 
             <ParallaxImage className="mb-10 rounded-xl border border-primary/10">
-              <div className="relative aspect-[21/9] overflow-hidden rounded-xl">
-                <Image src={blog.image || "/placeholder.svg"} alt={blog.title} fill className="object-cover" priority />
-              </div>
+              <BlogCover title={blog.title} category={blog.category} aspect="wide" className="rounded-xl" />
             </ParallaxImage>
 
             <RevealSection delay={0.1}>
@@ -202,13 +208,7 @@ export default async function BlogPostPage({ params }: BlogPostParams) {
                       <AnimatedCard key={relatedBlog._id}>
                         <Link href={`/blog/${relatedBlog.slug}`} className="group block">
                           <div className="rounded-xl overflow-hidden mb-3 border border-primary/10">
-                            <Image
-                              src={relatedBlog.image || "/placeholder.svg"}
-                              alt={relatedBlog.title}
-                              width={400}
-                              height={225}
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
+                            <BlogCover title={relatedBlog.title} category={relatedBlog.category} className="transition-transform duration-500 group-hover:scale-105" />
                           </div>
                           <h3 className="font-serif group-hover:text-primary transition-colors">{relatedBlog.title}</h3>
                           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mt-1.5">{relatedBlog.readTime}</p>

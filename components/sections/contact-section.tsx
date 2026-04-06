@@ -1,18 +1,18 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState, useRef } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { Mail, Phone, MapPin, Send, Linkedin, Github, ArrowUpRight, Sparkles } from "lucide-react"
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import { AnimatedSparkle, ScrollDrawDoodle } from "@/components/svg-doodles"
 import { FloatingCross, FloatingTriangle, FloatingDiamond } from "@/components/floating-elements"
-import { SwoopIn, WordByWord } from "@/components/swoop-in"
 import { MagneticButton } from "@/components/magnetic-button"
+import { ScrollRevealText } from "@/components/animations/scroll-reveal-text"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
 
 const contactInfo = [
   { icon: <Mail className="h-4 w-4" />, label: "Email", value: "abhisheksharma999r@gmail.com", href: "mailto:abhisheksharma999r@gmail.com" },
@@ -29,7 +29,14 @@ export function ContactSection() {
   const { toast } = useToast()
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const sectionRef = useScrollReveal<HTMLElement>()
+  const sectionContainerRef = useRef<HTMLElement>(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionContainerRef,
+    offset: ["start end", "start 40%"],
+  })
+  const sectionScale = useTransform(scrollYProgress, [0, 1], [0.95, 1])
+  const sectionOpacity = useTransform(scrollYProgress, [0, 0.3], [0.3, 1])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -70,7 +77,7 @@ export function ContactSection() {
   }
 
   return (
-    <section id="contact" ref={sectionRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
+    <section id="contact" ref={sectionContainerRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
       {/* Background accents with parallax */}
       <motion.div
         className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-primary/[0.02] rounded-full blur-[120px] pointer-events-none"
@@ -95,10 +102,15 @@ export function ContactSection() {
       <FloatingDiamond className="absolute top-16 left-[40%] hidden md:block" size={12} />
       <FloatingDiamond className="absolute bottom-1/3 right-[5%] hidden md:block" size={16} />
 
-      <div className="container px-4 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28 max-w-6xl mx-auto">
-          {/* Left side - Big typography */}
-          <SwoopIn direction="left" delay={0}>
+      <motion.div
+        style={{
+          scale: sectionScale,
+          opacity: sectionOpacity,
+        }}
+      >
+        <div className="container px-4 mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28 max-w-6xl mx-auto">
+            {/* Left side - Big typography */}
             <motion.div
               initial={{ opacity: 0, y: 40, rotateX: 8 }}
               whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
@@ -107,19 +119,10 @@ export function ContactSection() {
               style={{ perspective: 800 }}
             >
               <span className="section-label">Contact</span>
-              <h2 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl mt-4 tracking-tight leading-[0.95]">
-                <WordByWord
-                  text="Let's work"
-                  className="block"
-                  wordClassName="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95]"
-                  delay={0.1}
-                />
-                <WordByWord
-                  text="together."
-                  className="block text-primary text-glow-subtle"
-                  wordClassName="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95]"
-                  delay={0.4}
-                />
+              <h2 className="mt-4">
+                <ScrollRevealText className="block font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-tight leading-[0.95]">
+                  Let's work together.
+                </ScrollRevealText>
               </h2>
 
               {/* Curly arrow doodle pointing toward the form */}
@@ -199,131 +202,131 @@ export function ContactSection() {
                 ))}
               </motion.div>
             </motion.div>
-          </SwoopIn>
 
-          {/* Right side - Form */}
-          <SwoopIn direction="right" delay={0.15}>
-            <motion.div
-              initial={{ opacity: 0, y: 40, rotateX: 6 }}
-              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              style={{ perspective: 800 }}
-            >
-              <div className="bento-item card-shine">
-                <div className="flex items-center gap-2 mb-8">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary">Send a Message</span>
-                </div>
+            {/* Right side - Form */}
+            <ParallaxLayer speed={0.1}>
+              <motion.div
+                initial={{ opacity: 0, y: 40, rotateX: 6 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                style={{ perspective: 800 }}
+              >
+                <div className="bento-item card-shine">
+                  <div className="flex items-center gap-2 mb-8">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary">Send a Message</span>
+                  </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2.5">
+                        <label htmlFor="name" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                          Name
+                        </label>
+                        <Input
+                          id="name"
+                          name="name"
+                          placeholder="Your name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          required
+                          className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl h-12 transition-all duration-300"
+                        />
+                      </div>
+                      <div className="space-y-2.5">
+                        <label htmlFor="email" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                          Email
+                        </label>
+                        <Input
+                          id="email"
+                          name="email"
+                          type="email"
+                          placeholder="Your email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl h-12 transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+
                     <div className="space-y-2.5">
-                      <label htmlFor="name" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                        Name
+                      <label htmlFor="subject" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                        Subject
                       </label>
                       <Input
-                        id="name"
-                        name="name"
-                        placeholder="Your name"
-                        value={formData.name}
+                        id="subject"
+                        name="subject"
+                        placeholder="What's this about?"
+                        value={formData.subject}
                         onChange={handleChange}
                         required
                         className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl h-12 transition-all duration-300"
                       />
                     </div>
+
                     <div className="space-y-2.5">
-                      <label htmlFor="email" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                        Email
+                      <label htmlFor="message" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
+                        Message
                       </label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="Your email"
-                        value={formData.email}
+                      <Textarea
+                        id="message"
+                        name="message"
+                        placeholder="Tell me about your project..."
+                        rows={5}
+                        value={formData.message}
                         onChange={handleChange}
                         required
-                        className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl h-12 transition-all duration-300"
+                        className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl resize-none transition-all duration-300"
                       />
                     </div>
-                  </div>
 
-                  <div className="space-y-2.5">
-                    <label htmlFor="subject" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                      Subject
-                    </label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      placeholder="What's this about?"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl h-12 transition-all duration-300"
-                    />
-                  </div>
-
-                  <div className="space-y-2.5">
-                    <label htmlFor="message" className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground/60">
-                      Message
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      placeholder="Tell me about your project..."
-                      rows={5}
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      className="border-border/30 bg-background/50 focus:border-primary/40 focus:ring-primary/10 font-sans text-sm rounded-xl resize-none transition-all duration-300"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <MagneticButton strength={0.15}>
-                      <Button
-                        type="submit"
-                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-mono text-[10px] tracking-[0.2em] uppercase h-13 transition-all duration-300 relative overflow-hidden group"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <span className="flex items-center gap-2">
-                            <motion.span
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                              className="inline-block w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                            />
-                            Sending...
-                          </span>
-                        ) : (
-                          <>
-                            <span className="relative z-10 flex items-center justify-center gap-2">
-                              Send Message
-                              <Send className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    <div className="relative">
+                      <MagneticButton strength={0.15}>
+                        <Button
+                          type="submit"
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl font-mono text-[10px] tracking-[0.2em] uppercase h-13 transition-all duration-300 relative overflow-hidden group"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <span className="flex items-center gap-2">
+                              <motion.span
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                className="inline-block w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
+                              />
+                              Sending...
                             </span>
-                          </>
-                        )}
-                      </Button>
-                    </MagneticButton>
-                    {/* Sparkle near the submit button */}
-                    <AnimatedSparkle
-                      className="absolute -top-3 -right-3 pointer-events-none"
-                      size={18}
-                      delay={0.6}
-                    />
-                    <AnimatedSparkle
-                      className="absolute -bottom-2 -left-2 pointer-events-none"
-                      size={12}
-                      delay={1.0}
-                    />
-                  </div>
-                </form>
-              </div>
-            </motion.div>
-          </SwoopIn>
+                          ) : (
+                            <>
+                              <span className="relative z-10 flex items-center justify-center gap-2">
+                                Send Message
+                                <Send className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                              </span>
+                            </>
+                          )}
+                        </Button>
+                      </MagneticButton>
+                      {/* Sparkle near the submit button */}
+                      <AnimatedSparkle
+                        className="absolute -top-3 -right-3 pointer-events-none"
+                        size={18}
+                        delay={0.6}
+                      />
+                      <AnimatedSparkle
+                        className="absolute -bottom-2 -left-2 pointer-events-none"
+                        size={12}
+                        delay={1.0}
+                      />
+                    </div>
+                  </form>
+                </div>
+              </motion.div>
+            </ParallaxLayer>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }

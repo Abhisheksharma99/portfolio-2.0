@@ -12,7 +12,8 @@ interface ResumeDownloadButtonProps {
 }
 
 export function ResumeDownloadButton({ className, variant = "outline", children }: ResumeDownloadButtonProps) {
-  const [resumeUrl, setResumeUrl] = useState<string | null>(null)
+  const FALLBACK_RESUME_URL = "/resume.pdf"
+  const [resumeUrl, setResumeUrl] = useState<string>(FALLBACK_RESUME_URL)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -22,9 +23,11 @@ export function ResumeDownloadButton({ className, variant = "outline", children 
         if (response.ok) {
           const data = await response.json()
           setResumeUrl(data.url)
+        } else {
+          setResumeUrl(FALLBACK_RESUME_URL)
         }
       } catch {
-        // Resume not available — button will not render
+        setResumeUrl(FALLBACK_RESUME_URL)
       } finally {
         setIsLoading(false)
       }
@@ -32,10 +35,6 @@ export function ResumeDownloadButton({ className, variant = "outline", children 
 
     fetchResumeUrl()
   }, [])
-
-  if (isLoading || !resumeUrl) {
-    return null
-  }
 
   return (
     <Button asChild variant={variant} className={className}>

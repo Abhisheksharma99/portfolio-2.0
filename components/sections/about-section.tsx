@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
+import { motion, useInView, useMotionValue, useSpring, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Download, Briefcase, GraduationCap, MapPin, Code2, Sparkles } from "lucide-react"
@@ -12,10 +12,12 @@ import { fallbackWorkExperience, fallbackEducation } from "@/lib/fallback-data"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import { SwoopIn, WordByWord } from "@/components/swoop-in"
 import { DoodleHighlight, ScrollDrawDoodle } from "@/components/svg-doodles"
-import { FloatingDiamond, FloatingCross, FloatingDot, FloatingTriangle } from "@/components/floating-elements"
+import { SvgLightbulb, SvgDatabase, SvgCodeBracket, SvgGear } from "@/components/svg-illustrations"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
+import { ScrollRevealText } from "@/components/animations/scroll-reveal-text"
 
 const stats = [
-  { number: "4+", label: "Years Experience" },
+  { number: "5+", label: "Years Experience" },
   { number: "50+", label: "Projects" },
   { number: "10+", label: "Technologies" },
   { number: "6", label: "Certifications" },
@@ -29,6 +31,7 @@ const skills = [
   { name: "Python & FastAPI", level: 80 },
   { name: "MongoDB & PostgreSQL", level: 88 },
   { name: "Docker & Kubernetes", level: 75 },
+  { name: "AWS & Azure", level: 78 },
 ]
 
 function TiltWrapper({ children }: { children: React.ReactNode }) {
@@ -125,6 +128,14 @@ export function AboutSection() {
   const [isLoading, setIsLoading] = useState(true)
   const sectionRef = useScrollReveal<HTMLElement>()
 
+  // Photo card inner parallax
+  const photoContainerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress: photoScrollProgress } = useScroll({
+    target: photoContainerRef,
+    offset: ["start end", "end start"],
+  })
+  const imageParallaxY = useTransform(photoScrollProgress, [0, 1], [-30, 30])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -170,13 +181,23 @@ export function AboutSection() {
   return (
     <section id="about" ref={sectionRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
       {/* Background accent */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/[0.02] rounded-full blur-[120px] pointer-events-none" />
+      <ParallaxLayer speed={-0.15} className="absolute top-0 right-0 w-[600px] h-[600px] pointer-events-none">
+        <div className="w-full h-full bg-primary/[0.02] rounded-full blur-[120px]" />
+      </ParallaxLayer>
 
       {/* Floating decorative elements */}
-      <FloatingDiamond className="absolute top-[12%] right-[6%] hidden md:block" size={16} />
-      <FloatingCross className="absolute top-[40%] left-[4%] hidden md:block" size={14} />
-      <FloatingDot className="absolute bottom-[25%] right-[8%] hidden md:block" />
-      <FloatingTriangle className="absolute bottom-[15%] left-[7%] hidden md:block" size={16} />
+      <ParallaxLayer speed={-0.1} className="absolute top-[12%] right-[6%] hidden md:block z-0">
+        <SvgLightbulb className="w-9 h-9 opacity-25" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.25} className="absolute top-[40%] left-[4%] hidden md:block z-0">
+        <SvgDatabase className="w-8 h-8 opacity-20" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.2} className="absolute bottom-[25%] right-[8%] hidden md:block z-0">
+        <SvgCodeBracket className="w-8 h-8 opacity-25" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.3} className="absolute bottom-[15%] left-[7%] hidden md:block z-0">
+        <SvgGear className="w-7 h-7 opacity-20" />
+      </ParallaxLayer>
 
       <div className="container px-4 mx-auto">
         {/* Section label */}
@@ -209,12 +230,11 @@ export function AboutSection() {
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-primary">Who I Am</span>
               </div>
-              <WordByWord
-                text="Dynamic Full-Stack Developer with end-to-end experience building applications from scratch to production, including architecture design, scalable development, CI/CD pipelines, domain setup, hosting, load testing, and performance optimization."
+              <ScrollRevealText
                 className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6"
-                delay={0.2}
-                staggerDelay={0.03}
-              />
+              >
+                Dynamic Full-Stack Developer with end-to-end experience building applications from scratch to production, including architecture design, scalable development, CI/CD pipelines, domain setup, hosting, load testing, and performance optimization.
+              </ScrollRevealText>
               <p className="text-base text-muted-foreground/80 leading-relaxed">
                 Strong expertise in backend systems, frontend engineering, and API development,
                 with a focus on scalability, security, and reliability.
@@ -235,14 +255,19 @@ export function AboutSection() {
 
           {/* Photo card - swoops from right (even card, index 1) */}
           <SwoopIn direction="right" delay={0.1} className="lg:col-span-5">
-            <div className="bento-item p-0 overflow-hidden h-full min-h-[320px] group">
-              <div className="relative w-full h-full min-h-[320px]">
-                <Image
-                  src="/placeholder.svg?height=600&width=500"
-                  alt="Abhishek Sharma"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+            <div ref={photoContainerRef} className="bento-item p-0 overflow-hidden h-full min-h-[320px] group">
+              <div className="relative w-full h-full min-h-[320px] overflow-hidden">
+                <motion.div
+                  className="absolute inset-0"
+                  style={{ y: imageParallaxY }}
+                >
+                  <Image
+                    src="https://res.cloudinary.com/duhyrtr2h/image/upload/q_auto/v1775498579/portfolio/abhishek-profile.png"
+                    alt="Abhishek Sharma"
+                    fill
+                    className="object-contain object-bottom transition-transform duration-700 group-hover:scale-105"
+                  />
+                </motion.div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent opacity-70" />
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute bottom-6 left-6 flex items-center gap-2">

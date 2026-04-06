@@ -5,8 +5,9 @@ import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motio
 import { Code, Layout, Database, Smartphone, Palette, LineChart, ArrowUpRight, Plus, Minus } from "lucide-react"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import { ScrollDrawDoodle, AnimatedSparkle } from "@/components/svg-doodles"
-import { FloatingDot, FloatingCross } from "@/components/floating-elements"
-import { SwoopIn } from "@/components/swoop-in"
+import { SvgRocket, SvgServer, SvgGear } from "@/components/svg-illustrations"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap-config"
 
 const services = [
   {
@@ -93,17 +94,43 @@ function TiltWrapper({ children }: { children: React.ReactNode }) {
 
 export function ServicesSection() {
   const [expandedId, setExpandedId] = useState<number | null>(null)
-  const sectionRef = useScrollReveal<HTMLElement>()
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useGSAP(() => {
+    const items = sectionRef.current?.querySelectorAll(".service-item")
+    if (!items || items.length === 0) return
+
+    gsap.set(items, { opacity: 0, y: 40 })
+    ScrollTrigger.batch(items, {
+      onEnter: (batch) => {
+        gsap.to(batch, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          stagger: 0.08,
+          ease: "power2.out",
+        })
+      },
+      start: "top 90%",
+      once: true,
+    })
+  }, { scope: sectionRef })
 
   return (
     <section id="services" ref={sectionRef} className="py-32 md:py-40 bg-background relative overflow-hidden">
       {/* Background accent */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/[0.01] rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Floating decorative elements */}
-      <FloatingDot className="absolute top-24 right-[12%] pointer-events-none hidden md:block" />
-      <FloatingDot className="absolute bottom-40 left-[8%] pointer-events-none hidden md:block" />
-      <FloatingCross className="absolute top-[35%] right-[6%] pointer-events-none hidden md:block" size={18} />
+      {/* Floating developer SVGs with parallax */}
+      <ParallaxLayer speed={-0.15} className="absolute top-24 right-[12%] pointer-events-none hidden md:block z-0">
+        <SvgRocket className="w-9 h-9 opacity-20" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.25} className="absolute bottom-40 left-[8%] pointer-events-none hidden md:block z-0">
+        <SvgServer className="w-8 h-8 opacity-20" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.1} className="absolute top-[35%] right-[6%] pointer-events-none hidden md:block z-0">
+        <SvgGear className="w-8 h-8 opacity-15" />
+      </ParallaxLayer>
 
       <div className="container px-4 mx-auto">
         {/* Section header */}
@@ -138,10 +165,9 @@ export function ServicesSection() {
         {/* Accordion-style service list */}
         <div className="max-w-4xl mx-auto">
           {services.map((service, index) => (
-            <SwoopIn
+            <div
               key={service.id}
-              direction={index % 2 === 0 ? "left" : "right"}
-              delay={index * 0.06}
+              className="service-item"
             >
               <motion.div
                 initial={{ opacity: 0, y: 20, rotateX: 6 }}
@@ -243,7 +269,7 @@ export function ServicesSection() {
                   )}
                 </AnimatePresence>
               </motion.div>
-            </SwoopIn>
+            </div>
           ))}
         </div>
       </div>

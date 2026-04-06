@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import Image from "next/image"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Clock, Calendar } from "lucide-react"
+import { BlogCover } from "@/components/blog-cover"
 import { getBlogs } from "@/lib/actions/blog-actions"
 import { PageHero, StaggeredGrid, AnimatedCard, FloatingDecoration } from "@/components/page-effects"
 import { MarqueeStrip } from "@/components/marquee-strip"
@@ -67,17 +67,8 @@ export default async function BlogPage() {
                 <Card
                   className="overflow-hidden group hover:shadow-lg transition-all duration-500 card-shine glass-card border-0 rounded-xl"
                 >
-                  <div className="relative aspect-video overflow-hidden">
-                    <Image
-                      src={blog.image || "/placeholder.svg"}
-                      alt={blog.title}
-                      width={600}
-                      height={400}
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <Badge className="absolute top-3 right-3 bg-primary/90 text-primary-foreground text-[0.65rem] font-mono uppercase tracking-wider border-0">
-                      {blog.category}
-                    </Badge>
+                  <div className="relative overflow-hidden">
+                    <BlogCover title={blog.title} category={blog.category} className="transition-transform duration-500 group-hover:scale-105" />
                   </div>
 
                   <CardHeader>

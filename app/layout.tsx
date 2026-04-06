@@ -2,7 +2,9 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Instrument_Serif, Syne, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
+import "lenis/dist/lenis.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
 import { cn } from "@/lib/utils"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from "@/components/analytics"
@@ -53,19 +55,21 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <CustomCursor />
-          <PageIntro />
-          <div className="relative flex min-h-screen flex-col overflow-x-clip">
-            <SiteHeader />
-            <Suspense>
-              <div className="flex-1">{children}</div>
-              {modal}
-            </Suspense>
-            <SiteFooter />
-          </div>
-          <Toaster />
-          <Analytics />
-          <div className="grain-overlay" />
+          <SmoothScrollProvider>
+            <CustomCursor />
+            <PageIntro />
+            <div className="relative flex min-h-screen flex-col overflow-x-clip">
+              <SiteHeader />
+              <Suspense>
+                <div className="flex-1">{children}</div>
+                {modal}
+              </Suspense>
+              <SiteFooter />
+            </div>
+            <Toaster />
+            <Analytics />
+            <div className="grain-overlay" />
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

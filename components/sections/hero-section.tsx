@@ -1,25 +1,17 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Download, Github, Linkedin } from "lucide-react"
 import Link from "next/link"
-import { FloatingDot, FloatingRing, FloatingCross, FloatingTriangle } from "@/components/floating-elements"
+import { SvgCodeBracket, SvgTerminal, SvgServer, SvgGear, SvgRocket } from "@/components/svg-illustrations"
 import { TextScramble } from "@/components/text-scramble"
 import { AnimatedSparkle, ScrollDrawDoodle } from "@/components/svg-doodles"
 import { MagneticButton } from "@/components/magnetic-button"
 import { ResumeDownloadButton } from "@/components/resume-download-button"
-
-function smoothScrollTo(href: string) {
-  const targetId = href.replace("#", "")
-  const el = document.getElementById(targetId)
-  if (el) {
-    const headerOffset = 80
-    const elementPosition = el.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({ top: elementPosition - headerOffset, behavior: "smooth" })
-  }
-}
+import { useSmoothScrollTo } from "@/hooks/use-smooth-scroll"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
 
 function AnimatedLetter({ letter, delay }: { letter: string; delay: number }) {
   return (
@@ -52,6 +44,29 @@ function AnimatedText({ text, startDelay = 0 }: { text: string; startDelay?: num
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const smoothScrollTo = useSmoothScrollTo()
+
+  // Scroll-linked parallax
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  })
+
+  // Content fades out + scales down + rises as user scrolls
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.3, 0.6], [1, 1, 0])
+  const contentScale = useTransform(scrollYProgress, [0, 0.3, 0.6], [1, 1, 0.85])
+  const contentY = useTransform(scrollYProgress, [0, 0.6], [0, -100])
+
+  // Gradient orbs move at different parallax speeds
+  const orb1Y = useTransform(scrollYProgress, [0, 1], [0, -200])
+  const orb2Y = useTransform(scrollYProgress, [0, 1], [0, -120])
+  const orb3Y = useTransform(scrollYProgress, [0, 1], [0, -80])
+
+  // Grid pattern parallax
+  const gridY = useTransform(scrollYProgress, [0, 1], [0, -50])
+
+  // Scroll indicator fades out immediately
+  const scrollIndicatorOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -75,40 +90,41 @@ export function HeroSection() {
       {/* Animated gradient mesh background */}
       <div className="hero-gradient-mesh" />
 
-      {/* Gradient orbs background with parallax */}
+      {/* Gradient orbs background with mouse-tracking + scroll parallax */}
       <div className="absolute inset-0">
         <motion.div
           className="gradient-orb gradient-orb-1"
           animate={{
             x: mousePosition.x * -40,
-            y: mousePosition.y * -30,
           }}
+          style={{ y: orb1Y }}
           transition={{ type: "spring", stiffness: 50, damping: 30 }}
         />
         <motion.div
           className="gradient-orb gradient-orb-2"
           animate={{
             x: mousePosition.x * 30,
-            y: mousePosition.y * 20,
           }}
+          style={{ y: orb2Y }}
           transition={{ type: "spring", stiffness: 40, damping: 25 }}
         />
         <motion.div
           className="gradient-orb gradient-orb-3"
           animate={{
             x: mousePosition.x * -20,
-            y: mousePosition.y * 35,
           }}
+          style={{ y: orb3Y }}
           transition={{ type: "spring", stiffness: 45, damping: 28 }}
         />
       </div>
 
-      {/* Subtle grid pattern */}
-      <div
+      {/* Subtle grid pattern with parallax */}
+      <motion.div
         className="absolute inset-0 opacity-[0.015]"
         style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
           backgroundSize: "48px 48px",
+          y: gridY,
         }}
       />
 
@@ -121,14 +137,32 @@ export function HeroSection() {
         }}
       />
 
-      {/* Floating decorative elements */}
-      <FloatingDot className="absolute top-[15%] left-[8%] hidden md:block" />
-      <FloatingRing className="absolute top-[22%] right-[10%] hidden md:block" size={36} />
-      <FloatingCross className="absolute bottom-[30%] left-[5%] hidden md:block" size={14} />
-      <FloatingTriangle className="absolute top-[60%] right-[7%] hidden md:block" size={18} />
-      <FloatingDot className="absolute bottom-[20%] right-[15%] hidden md:block" />
+      {/* Floating developer-themed SVG icons with parallax depth */}
+      <ParallaxLayer speed={-0.15} className="absolute top-[15%] left-[8%] hidden md:block z-0">
+        <SvgCodeBracket className="w-8 h-8 md:w-10 md:h-10 opacity-40" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.35} className="absolute top-[20%] right-[10%] hidden md:block z-0">
+        <SvgTerminal className="w-9 h-9 md:w-12 md:h-12 opacity-30" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.1} className="absolute bottom-[30%] left-[5%] hidden md:block z-0">
+        <SvgServer className="w-8 h-8 opacity-25" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.4} className="absolute top-[60%] right-[7%] hidden md:block z-0">
+        <SvgGear className="w-7 h-7 md:w-9 md:h-9 opacity-20" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.25} className="absolute bottom-[22%] right-[15%] hidden md:block z-0">
+        <SvgRocket className="w-8 h-8 md:w-10 md:h-10 opacity-30" />
+      </ParallaxLayer>
 
-      <div className="container relative z-10 px-4 py-32 mx-auto">
+      {/* Main content with scroll-linked fade/scale/rise */}
+      <motion.div
+        className="container relative z-10 px-4 py-32 mx-auto"
+        style={{
+          opacity: contentOpacity,
+          scale: contentScale,
+          y: contentY,
+        }}
+      >
         <div className="flex flex-col items-center max-w-6xl mx-auto">
           {/* Status badge with glow */}
           <motion.div
@@ -288,13 +322,14 @@ export function HeroSection() {
             ))}
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Scroll indicator with curly arrow doodle */}
+      {/* Scroll indicator with curly arrow doodle -- fades on scroll */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 1.6 }}
+        style={{ opacity: scrollIndicatorOpacity }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2"
       >
         <a

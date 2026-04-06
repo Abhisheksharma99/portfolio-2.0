@@ -7,7 +7,9 @@ import { motion, useMotionValue, useSpring } from "framer-motion"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu } from "lucide-react"
+import { Menu, Download } from "lucide-react"
+import { useSmoothScrollTo } from "@/hooks/use-smooth-scroll"
+import { ResumeDownloadButton } from "@/components/resume-download-button"
 
 const navLinks = [
   { href: "/#about", label: "About" },
@@ -71,6 +73,8 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const smoothScrollTo = useSmoothScrollTo()
+
   const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     setMobileOpen(false)
@@ -81,13 +85,8 @@ export function SiteHeader() {
       return
     }
 
-    const el = document.getElementById(targetId)
-    if (el) {
-      const headerOffset = 80
-      const elementPosition = el.getBoundingClientRect().top + window.scrollY
-      window.scrollTo({ top: elementPosition - headerOffset, behavior: "smooth" })
-    }
-  }, [pathname, router])
+    smoothScrollTo(`#${targetId}`, { offset: -80 })
+  }, [pathname, router, smoothScrollTo])
 
   return (
     <motion.header
@@ -152,6 +151,22 @@ export function SiteHeader() {
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+            className="hidden md:block"
+          >
+            <ResumeDownloadButton
+              variant="outline"
+              className="rounded-full border-foreground/15 hover:border-primary/40 hover:bg-primary/5 font-mono text-[10px] tracking-[0.15em] uppercase h-9 px-4"
+            >
+              <span className="flex items-center gap-1.5">
+                <Download className="h-3 w-3" />
+                Resume
+              </span>
+            </ResumeDownloadButton>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
             <ModeToggle />
@@ -182,6 +197,22 @@ export function SiteHeader() {
                     </a>
                   </motion.div>
                 ))}
+                <motion.div
+                  initial={{ opacity: 0, x: 50, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.5, delay: navLinks.length * 0.08 }}
+                  className="pt-4 border-t border-border/20 mt-4"
+                >
+                  <ResumeDownloadButton
+                    variant="outline"
+                    className="rounded-full border-foreground/15 hover:border-primary/40 hover:bg-primary/5 font-mono text-[11px] tracking-[0.15em] uppercase"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Download className="h-3.5 w-3.5" />
+                      Download Resume
+                    </span>
+                  </ResumeDownloadButton>
+                </motion.div>
               </nav>
             </SheetContent>
           </Sheet>

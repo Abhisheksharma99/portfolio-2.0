@@ -7,7 +7,8 @@ import { Star, Quote } from "lucide-react"
 import { getTestimonials } from "@/lib/actions/testimonial-actions"
 import { fallbackTestimonials } from "@/lib/fallback-data"
 import { DoodleHighlight } from "@/components/svg-doodles"
-import { FloatingRing, FloatingDot } from "@/components/floating-elements"
+import { ParallaxLayer } from "@/components/wow-factor-effects/scroll-storytelling"
+import { SvgCodeBracket, SvgLightbulb } from "@/components/svg-illustrations"
 
 function TiltCard({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -173,11 +174,13 @@ export function TestimonialsSection() {
       {/* Background accents */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-primary/[0.02] rounded-full blur-[100px] pointer-events-none" />
 
-      {/* Floating decorative elements */}
-      <FloatingRing className="absolute top-20 right-16 hidden md:block" size={50} />
-      <FloatingRing className="absolute bottom-32 left-10 hidden md:block" size={30} />
-      <FloatingDot className="absolute top-40 left-[15%] hidden md:block" />
-      <FloatingDot className="absolute bottom-20 right-[20%] hidden md:block" />
+      {/* Floating decorative elements with parallax depth */}
+      <ParallaxLayer speed={-0.2} className="absolute top-20 right-16 hidden md:block z-0">
+        <SvgCodeBracket className="w-10 h-10 opacity-20" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.15} className="absolute bottom-32 left-10 hidden md:block z-0">
+        <SvgLightbulb className="w-9 h-9 opacity-20" />
+      </ParallaxLayer>
 
       {/* Section header */}
       <div className="container px-4 mx-auto pt-32 md:pt-40">
