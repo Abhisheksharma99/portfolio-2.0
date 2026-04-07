@@ -112,7 +112,7 @@ export function StoryIntroSection() {
   const ctaOp = useTransform(sp, [0.93, 0.97], [0, 1])
 
   return (
-    <section className="relative bg-background">
+    <section id="story" className="relative bg-background">
       <div ref={containerRef} className="relative" style={{ height: "500vh" }}>
         <div className="sticky top-0 h-screen overflow-hidden">
 
@@ -148,11 +148,11 @@ export function StoryIntroSection() {
           {/* Title + subtitle centered over the browser */}
           <motion.div style={{ opacity: p1Op, y: p1Y }} className="absolute inset-0 flex flex-col items-center justify-center px-4 z-10">
             <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-tight text-center">
-              I build things{" "}
-              <span className="text-primary">for the web<span className="text-foreground">.</span></span>
+              I turn ideas into{" "}
+              <span className="text-primary">reality<span className="text-foreground">.</span></span>
             </h2>
             <p className="mt-5 text-muted-foreground text-base md:text-lg max-w-lg mx-auto text-center leading-relaxed">
-              From architecture to deployment — crafting end-to-end digital experiences.
+              Architecture, code, and design — engineering solutions that scale.
             </p>
           </motion.div>
 

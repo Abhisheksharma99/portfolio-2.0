@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { motion, useScroll, useSpring } from "framer-motion"
 
-const sectionIds = ["about", "projects", "services", "blog", "testimonials", "contact"]
+const sectionIds = ["about", "projects", "story", "services", "blog", "testimonials", "contact"]
 
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll()

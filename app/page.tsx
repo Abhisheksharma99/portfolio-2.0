@@ -59,20 +59,20 @@ export default function Home() {
       <HeroSection />
       <MarqueeStrip />
 
-      {/* Chapter 2: The Story (GSAP pinned section) */}
-      <StoryIntroSection />
-
-      {/* Chapter 3: About */}
+      {/* Chapter 2: About */}
       <AboutSection />
 
       {/* Paint brush transition */}
       <PaintBrushDivider />
 
-      {/* Chapter 4: Selected Work */}
+      {/* Chapter 3: Selected Work */}
       <ProjectsSection />
 
       {/* Gradient line transition */}
       <GradientRevealLine />
+
+      {/* Chapter 4: The Story (parallax assembly) */}
+      <StoryIntroSection />
 
       {/* Chapter 5: Services */}
       <ServicesSection />

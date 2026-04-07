@@ -8,6 +8,7 @@ const chapters = [
   { id: "hero", label: "Intro", selector: "section:first-of-type" },
   { id: "about", label: "About" },
   { id: "projects", label: "Projects" },
+  { id: "story", label: "Story" },
   { id: "services", label: "Services" },
   { id: "blog", label: "Blog" },
   { id: "testimonials", label: "Voices" },
